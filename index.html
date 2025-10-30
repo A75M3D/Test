@@ -3,1096 +3,1150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة المنتجات - متجر المستقبل </title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Skillzoy Academy - منصة التعليم الالكتروني</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --color-primary: 59 130 246;
+            --color-primary-dark: 37 99 235;
+            --color-primary-light: 147 197 253;
+            --sidebar-bg: rgba(15, 23, 42, 0.8);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+        }
+        
+        [data-theme="blue"] { 
+            --color-primary: 59 130 246;
+            --color-primary-dark: 37 99 235;
+            --color-primary-light: 147 197 253;
+        }
+        [data-theme="green"] { 
+            --color-primary: 34 197 94;
+            --color-primary-dark: 22 163 74;
+            --color-primary-light: 134 239 172;
+        }
+        [data-theme="purple"] { 
+            --color-primary: 168 85 247;
+            --color-primary-dark: 147 51 234;
+            --color-primary-light: 216 180 254;
+        }
+        [data-theme="red"] { 
+            --color-primary: 239 68 68;
+            --color-primary-dark: 220 38 38;
+            --color-primary-light: 252 165 165;
+        }
+        [data-theme="orange"] { 
+            --color-primary: 249 115 22;
+            --color-primary-dark: 234 88 12;
+            --color-primary-light: 253 186 116;
+        }
+        [data-theme="teal"] { 
+            --color-primary: 20 184 166;
+            --color-primary-dark: 15 118 110;
+            --color-primary-light: 94 234 212;
+        }
+        [data-theme="indigo"] { 
+            --color-primary: 99 102 241;
+            --color-primary-dark: 79 70 229;
+            --color-primary-light: 165 180 252;
+        }
+        [data-theme="pink"] { 
+            --color-primary: 236 72 153;
+            --color-primary-dark: 219 39 119;
+            --color-primary-light: 249 168 212;
+        }
+        [data-theme="amber"] { 
+            --color-primary: 245 158 11;
+            --color-primary-dark: 217 119 6;
+            --color-primary-light: 252 211 77;
+        }
+        [data-theme="emerald"] { 
+            --color-primary: 16 185 129;
+            --color-primary-dark: 5 150 105;
+            --color-primary-light: 110 231 183;
         }
 
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            line-height: 1.6;
-            direction: rtl;
+        .light-theme {
+            --sidebar-bg: rgba(248, 250, 252, 0.8);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #334155;
+            --text-light: #64748b;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
+        .theme-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* شاشة الدخول */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+        
+        .sidebar-item.active {
+            background: linear-gradient(135deg, rgb(var(--color-primary) / 0.15) 0%, rgb(var(--color-primary) / 0.05) 100%);
+            color: rgb(var(--color-primary));
+            border-right: 3px solid rgb(var(--color-primary));
         }
-
-        .login-container {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .login-title {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #1e293b;
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
-        .login-input {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 15px 0;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 16px;
+        
+        .shadow-glow {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #7c3aed;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
+        
+        .shadow-glow-primary {
+            box-shadow: 0 8px 32px rgb(var(--color-primary) / 0.15);
         }
-
-        .login-btn:hover {
-            background: #6d28d9;
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, rgb(var(--color-primary) / 0.08) 0%, rgb(var(--color-primary) / 0.03) 50%, transparent 100%);
         }
-
-        .error-message {
-            color: #dc2626;
-            margin-top: 10px;
-            display: none;
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .hidden {
-            display: none;
-        }
-
-        /* الهيدر */
-        header {
-            background: white;
-            padding: 15px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #7c3aed;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #475569;
-            padding: 8px 15px;
-            border-radius: 6px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background: #7c3aed;
-            color: white;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .icon-btn {
-            background: #f1f5f9;
-            border: none;
-            border-radius: 6px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #475569;
-            transition: all 0.3s;
-        }
-
-        .icon-btn:hover {
-            background: #7c3aed;
-            color: white;
-        }
-
-        /* المحتوى الرئيسي */
-        .page-header {
-            text-align: center;
-            padding: 40px 0 30px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: #1e293b;
-        }
-
-        .page-description {
-            font-size: 16px;
-            color: #64748b;
-        }
-
-        /* لوحة التحكم */
-        .admin-panel {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .panel-title {
-            font-size: 20px;
-            color: #1e293b;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-        }
-
-        .btn-primary {
-            background: #7c3aed;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #6d28d9;
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-error {
-            background: #dc2626;
-            color: white;
-        }
-
-        /* حالة الاتصال */
-        .connection-status {
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .connection-status.success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .connection-status.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .connection-status.info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-        }
-
-        /* إدارة المنتجات */
-        .management-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .management-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-container, .preview-container {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .form-title, .preview-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #1e293b;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-        }
-
-        .form-text {
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        /* معاينة المنتج */
-        .preview-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .preview-image {
-            height: 200px;
-            width: 100%;
-            background: #f3f4f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-        }
-
-        .preview-content {
-            padding: 15px;
-        }
-
-        .preview-category {
-            color: #7c3aed;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .preview-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #1f2937;
-        }
-
-        /* تنسيق التقييم في المعاينة */
-        .preview-rating {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-            color: #dc2626;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .preview-rating i {
-            color: #dc2626;
-        }
-
-        .rating-count {
-            background: rgba(220, 38, 38, 0.1);
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-        }
-
-        .preview-price {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .current-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: #7c3aed;
-        }
-
-        .original-price {
-            font-size: 14px;
-            color: #6b7280;
-            text-decoration: line-through;
-        }
-
-        /* قائمة المنتجات */
-        .products-section {
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #1e293b;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
+        
+        .hover-lift:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
-
-        .product-image {
-            height: 200px;
-            width: 100%;
-            object-fit: cover;
+        
+        .dark .hover-lift:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
-
-        .product-content {
-            padding: 15px;
+        
+        .text-gradient {
+            background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-
-        .product-category {
-            color: #7c3aed;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%);
         }
-
-        .product-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #1f2937;
+        
+        .sidebar-glass {
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        /* تنسيق التقييم في البطاقة */
-        .product-rating {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-            color: #dc2626;
-            font-weight: 600;
+        
+        .card-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            background: rgb(var(--color-primary) / 0.1);
+            color: rgb(var(--color-primary));
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
+            margin: 2px;
+            border: 1px solid rgb(var(--color-primary) / 0.2);
         }
-
-        .product-rating i {
-            color: #dc2626;
-        }
-
-        .product-price {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .product-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .action-btn {
-            background: #fee2e2;
-            border: none;
-            border-radius: 6px;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #dc2626;
-            transition: all 0.3s;
-        }
-
-        .action-btn:hover {
-            background: #dc2626;
+        
+        .notification {
+            padding: 16px 20px;
+            border-radius: 12px;
             color: white;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        /* رسائل النموذج */
-        .form-message {
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .form-message.success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .form-message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .form-message.warning {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fcd34d;
-        }
-
-        /* تحميل */
-        .loading {
-            display: none;
-            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
             align-items: center;
-            padding: 20px;
+            gap: 12px;
+            max-width: 350px;
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            backdrop-filter: blur(10px);
         }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f4f6;
-            border-top: 4px solid #7c3aed;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .notification.success {
+            background: rgba(16, 185, 129, 0.9);
+        }
+        
+        .notification.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+        
+        .notification.info {
+            background: rgba(59, 130, 246, 0.9);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* التمرير المخصص */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgb(var(--color-primary));
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(var(--color-primary-dark));
         }
     </style>
 </head>
-<body>
-    <!-- شاشة الدخول -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-container">
-            <h2 class="login-title">الدخول للإدارة</h2>
-            <p>هذه الصفحة مخصصة للمسؤول فقط</p>
-            
-            <input type="password" 
-                   class="login-input" 
-                   id="adminPassword" 
-                   placeholder="أدخل كلمة المرور">
-            
-            <button class="login-btn" id="loginBtn">
-                <i class="fas fa-lock"></i>
-                دخول
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-200 min-h-screen transition-colors duration-300 theme-transition" data-theme="blue">
+    <!-- نظام الإشعارات -->
+    <div id="notification-container" class="fixed top-4 left-4 z-50 flex flex-col gap-2"></div>
+
+    <!-- زر القائمة المتنقلة -->
+    <button id="mobile-menu-btn" class="md:hidden fixed top-4 right-4 z-50 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300" style="background-color: rgb(var(--color-primary))">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- الشريط الجانبي -->
+    <aside id="sidebar" class="sidebar-glass fixed right-0 top-0 h-full w-80 theme-transition flex flex-col transform transition-all duration-500 z-30 lg:relative lg:translate-x-0" style="transform: translateX(-100%);">
+        <!-- اللوجو -->
+        <div class="p-6 border-b border-white/10 flex items-center gap-3">
+            <a href="#" class="logo flex items-center gap-3 text-white no-underline">
+                <div class="logo-icon w-10 h-10 rounded-lg flex items-center justify-center shadow-glow-primary" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                    <i class="fas fa-graduation-cap text-white"></i>
+                </div>
+                <span class="text-xl font-bold text-gradient">Skillzoy</span>
+            </a>
+            <button id="close-sidebar" class="p-2 rounded-xl hover:bg-white/10 text-white lg:hidden ml-auto">
+                <i class="fas fa-times"></i>
             </button>
+        </div>
+        
+        <!-- الملف الشخصي المصغر -->
+        <div class="p-6 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-16 h-16 rounded-2xl overflow-hidden border-4 border-white/20 shadow-glow" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                        <div class="w-full h-full flex items-center justify-center text-white">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white/70 shadow-glow"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p id="sidebar-user-name" class="text-lg font-semibold text-white truncate">نشط الان</p>
+                    <p class="text-sm text-slate-300 truncate">👨‍🎓 طالب</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- القائمة الرئيسية -->
+        <nav class="flex-1 p-4 overflow-y-auto">
+            <div class="space-y-2">
+                <a href="#" class="sidebar-item dashboard-link flex items-center gap-3 p-3 rounded-xl text-slate-200 hover:bg-white/10 theme-transition active">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-primary" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                        <i class="fas fa-home text-white text-sm"></i>
+                    </div>
+                    <span class="font-medium">لوحة التحكم</span>
+                </a>
+                
+                <a href="#" class="sidebar-item courses-link flex items-center gap-3 p-3 rounded-xl text-slate-200 hover:bg-white/10 theme-transition">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-primary" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                        <i class="fas fa-book text-white text-sm"></i>
+                    </div>
+                    <span class="font-medium">الدورات</span>
+                </a>
+                
+                <a href="#" class="sidebar-item my-courses-link flex items-center gap-3 p-3 rounded-xl text-slate-200 hover:bg-white/10 theme-transition">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-primary" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                        <i class="fas fa-user-graduate text-white text-sm"></i>
+                    </div>
+                    <span class="font-medium">دوراتي</span>
+                </a>
+                
+                <a href="#" class="sidebar-item profile-link flex items-center gap-3 p-3 rounded-xl text-slate-200 hover:bg-white/10 theme-transition">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-primary" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                    <span class="font-medium">البروفايل</span>
+                </a>
+            </div>
             
-            <div class="error-message" id="errorMessage">
-                كلمة المرور غير صحيحة!
+            <!-- اختيار الثيم -->
+            <div class="mt-8">
+                <h3 class="text-sm text-slate-300 uppercase tracking-wider mb-3 px-2">الثيمات</h3>
+                <div class="grid grid-cols-5 gap-2 p-2">
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="blue" style="background-color: #3b82f6"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="green" style="background-color: #22c55e"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="purple" style="background-color: #a855f7"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="red" style="background-color: #ef4444"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="orange" style="background-color: #f97316"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="teal" style="background-color: #14b8a6"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="indigo" style="background-color: #6366f1"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="pink" style="background-color: #ec4899"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="amber" style="background-color: #f59e0b"></button>
+                    <button class="theme-option w-8 h-8 rounded-full border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300" data-theme="emerald" style="background-color: #10b981"></button>
+                </div>
+                
+                <div class="theme-toggle flex items-center justify-between p-3 mt-4 text-slate-200 cursor-pointer rounded-xl transition-all duration-200 hover:bg-white/10" id="theme-toggle">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-sun"></i>
+                        <span>وضع النهار</span>
+                    </div>
+                    <i class="fas fa-toggle-off" id="theme-icon"></i>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content mr-0 lg:mr-80 min-h-screen transition-all duration-300 p-4 lg:p-6">
+        <!-- الصفحة الرئيسية -->
+        <div id="dashboard-content" class="animate-fadeIn">
+            <div class="page-title card-glass rounded-2xl p-8 shadow-xl text-center mb-8">
+                <h1 class="text-3xl lg:text-4xl font-bold text-white mb-4">Skillzoy Academy - منصة رائدة في التعليم الالكتروني</h1>
+                <p class="text-slate-300 text-lg max-w-2xl mx-auto">أفضل الدورات التعليمية لتطوير مهاراتك ومعرفتك في مختلف المجالات</p>
+            </div>
+            
+            <!-- فلاتر التصنيفات -->
+            <div class="category-filters flex justify-center gap-3 mb-8 flex-wrap">
+                <button class="category-filter active px-4 py-2 rounded-full cursor-pointer transition-all duration-200 font-medium" data-category="all" style="background-color: rgb(var(--color-primary)); color: white">جميع الدورات</button>
+                <button class="category-filter px-4 py-2 rounded-full cursor-pointer transition-all duration-200 font-medium card-glass" data-category="programming">برمجة</button>
+                <button class="category-filter px-4 py-2 rounded-full cursor-pointer transition-all duration-200 font-medium card-glass" data-category="design">تصميم</button>
+                <button class="category-filter px-4 py-2 rounded-full cursor-pointer transition-all duration-200 font-medium card-glass" data-category="business">أعمال</button>
+                <button class="category-filter px-4 py-2 rounded-full cursor-pointer transition-all duration-200 font-medium card-glass" data-category="language">لغات</button>
+            </div>
+            
+            <!-- شبكة الدورات -->
+            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <!-- سيتم ملؤها ديناميكياً -->
             </div>
 
-            <div style="margin-top: 20px; font-size: 0.8rem; color: #6b7280;">
-                كلمة المرور الافتراضية: <strong>admin123Max</strong>
+            <!-- قسم الإحصائيات -->
+            <div class="stats-section grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 mb-8">
+                <div class="stat-card card-glass rounded-xl p-6 text-center transition-all duration-300 hover:scale-105">
+                    <div class="stat-number text-3xl font-bold mb-2" id="students-count" style="color: rgb(var(--color-primary))">0</div>
+                    <div class="stat-label text-slate-300">طالب مسجل</div>
+                </div>
+                <div class="stat-card card-glass rounded-xl p-6 text-center transition-all duration-300 hover:scale-105">
+                    <div class="stat-number text-3xl font-bold mb-2" id="courses-count" style="color: rgb(var(--color-primary))">0</div>
+                    <div class="stat-label text-slate-300">دورة متاحة</div>
+                </div>
+                <div class="stat-card card-glass rounded-xl p-6 text-center transition-all duration-300 hover:scale-105">
+                    <div class="stat-number text-3xl font-bold mb-2" id="certificates-count" style="color: rgb(var(--color-primary))">0</div>
+                    <div class="stat-label text-slate-300">شهادة معتمدة</div>
+                </div>
+                <div class="stat-card card-glass rounded-xl p-6 text-center transition-all duration-300 hover:scale-105">
+                    <div class="stat-number text-3xl font-bold mb-2" id="instructors-count" style="color: rgb(var(--color-primary))">0</div>
+                    <div class="stat-label text-slate-300">مدرب محترف</div>
+                </div>
             </div>
+        </div>
+
+        <!-- صفحة دوراتي -->
+        <div id="my-courses-content" class="hidden animate-fadeIn">
+            <div class="page-title card-glass rounded-2xl p-8 shadow-xl text-center mb-8">
+                <h1 class="text-3xl lg:text-4xl font-bold text-white mb-4">دوراتي</h1>
+                <p class="text-slate-300 text-lg max-w-2xl mx-auto">الدورات التي سجلت فيها ويمكنك متابعتها</p>
+            </div>
+            
+            <div id="my-courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <!-- سيتم ملؤها ديناميكياً -->
+            </div>
+            
+            <div id="empty-my-courses" class="text-center p-12 text-slate-400 hidden">
+                <i class="fas fa-book-open text-6xl mb-6" style="color: rgb(var(--color-primary))"></i>
+                <h3 class="text-2xl font-bold mb-4 text-slate-300">لا توجد دورات مسجلة</h3>
+                <p class="max-w-md mx-auto mb-6">لم تسجل في أي دورة بعد. قم بتصفح الدورات المتاحة وسجل في الدورة التي تهمك.</p>
+                <button id="browse-courses-btn" class="px-6 py-3 rounded-lg font-semibold transition-all duration-200 text-white hover-lift" style="background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)">تصفح الدورات</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- مشغل الفيديو المدمج -->
+    <div id="video-player" class="fixed inset-0 bg-black/90 z-50 hidden justify-center items-center">
+        <div class="video-player w-full max-w-4xl bg-black rounded-xl overflow-hidden relative">
+            <button id="close-video" class="absolute top-4 left-4 bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer z-10">
+                <i class="fas fa-times"></i>
+            </button>
+            <iframe id="video-frame" class="w-full h-96 md:h-[500px]" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
-    <!-- محتوى الإدارة -->
-    <div id="adminContent" class="hidden">
-        <!-- الهيدر -->
-        <header>
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">Future STORE</div>
-                    
-                    <nav class="nav-links">
-                        <a href="index.html">
-                            <i class="fas fa-home"></i>
-                            الرئيسية
-                        </a>
-                        <a href="#" class="active">
-                            <i class="fas fa-cog"></i>
-                            إدارة المنتجات
-                        </a>
-                    </nav>
-                    
-                    <div class="header-actions">
-                        <button class="icon-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- المحتوى الرئيسي -->
-        <main class="container">
-            <div class="page-header">
-                <h1 class="page-title">إدارة المنتجات</h1>
-                <p class="page-description">أضف منتجات جديدة بسهولة إلى متجرك</p>
-            </div>
-
-            <!-- لوحة التحكم -->
-            <div class="admin-panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">لوحة التحكم</h2>
-                    <div class="admin-actions">
-                        <button class="btn btn-success" id="exportData">
-                            <i class="fas fa-download"></i>
-                            تصدير البيانات
-                        </button>
-                        <button class="btn btn-warning" id="importData">
-                            <i class="fas fa-upload"></i>
-                            استيراد البيانات
-                        </button>
-                        <button class="btn btn-error" id="resetData">
-                            <i class="fas fa-trash"></i>
-                            مسح الكل
-                        </button>
-                    </div>
-                </div>
-                <p>جميع التغييرات التي تقوم بها هنا ستظهر لجميع زوار الموقع تلقائياً</p>
-                <div id="connectionStatus" class="connection-status"></div>
-            </div>
-
-            <div class="management-section">
-                <!-- نموذج إضافة المنتج -->
-                <div class="form-container">
-                    <h2 class="form-title">إضافة منتج جديد</h2>
-                    <form id="productForm">
-                        <div class="form-group">
-                            <label for="productName" class="form-label">اسم المنتج</label>
-                            <input type="text" id="productName" class="form-control" placeholder="أدخل اسم المنتج" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="productPrice" class="form-label">السعر (ج.س)</label>
-                            <input type="number" id="productPrice" class="form-control" placeholder="أدخل سعر المنتج" min="0" step="0.01" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="originalPrice" class="form-label">السعر الأصلي (ج.س) - اختياري</label>
-                            <input type="number" id="originalPrice" class="form-control" placeholder="أدخل السعر الأصلي للمنتج" min="0" step="0.01">
-                            <div class="form-text">اتركه فارغاً إذا لم يكن هناك سعر أصلي</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="productCategory" class="form-label">التصنيف</label>
-                            <select id="productCategory" class="form-control" required>
-                                <option value="">اختر تصنيف المنتج</option>
-                                <option value="لابتوبات">لابتوبات</option>
-                                <option value="بدل">بدل</option>
-                                <option value="فساتين">فساتين</option>
-                                <option value="طرح">طرح</option>
-                                <option value="سبورتات">سبورتات</option>
-                                <option value="عروض خاصة">عروض خاصة</option>
-                            </select>
-                        </div>
-                        
-                        <!-- حقل التقييم الجديد -->
-                        <div class="form-group">
-                            <label for="productRating" class="form-label">التقييم</label>
-                            <input type="text" id="productRating" class="form-control" placeholder="مثال: 3.2K, 4.5K, 800" value="2.3K">
-                            <div class="form-text">أدخل التقييم بصيغة مثل 3.2K, 4.5K, 800 إلخ</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="productImage" class="form-label">رابط الصورة</label>
-                            <input type="url" id="productImage" class="form-control" placeholder="أدخل رابط صورة المنتج">
-                            <div class="form-text">يمكنك استخدام رابط صورة من الإنترنت</div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-plus"></i>
-                            إضافة المنتج
-                        </button>
-
-                        <div id="formMessage" class="form-message"></div>
-                    </form>
-                </div>
-                
-                <!-- معاينة المنتج -->
-                <div class="preview-container">
-                    <h2 class="preview-title">معاينة المنتج</h2>
-                    <div class="preview-card">
-                        <div class="preview-image" id="previewImage">
-                            <i class="fas fa-image"></i>
-                        </div>
-                        <div class="preview-content">
-                            <div class="preview-category" id="previewCategory">التصنيف</div>
-                            <h3 class="preview-name" id="previewName">اسم المنتج</h3>
-                            
-                            <!-- إضافة التقييم في المعاينة -->
-                            <div class="preview-rating">
-                                <i class="fas fa-heart"></i>
-                                <span class="rating-count" id="previewRating">2.3K</span>
-                            </div>
-                            
-                            <div class="preview-price">
-                                <span class="current-price" id="previewPrice">0 ج.س</span>
-                                <span class="original-price" id="previewOriginalPrice" style="display: none;">0 ج.س</span>
-                            </div>
-                        </div>
-                    </div>
+    <!-- الفوتر -->
+    <footer class="mt-12 pt-12 pb-6 px-4 md:px-8 rounded-t-3xl shadow-2xl" style="background-color: var(--sidebar-bg)">
+        <div class="footer-content max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="footer-section">
+                <h3 class="text-xl font-bold mb-6" style="color: rgb(var(--color-primary))">Skillzoy Academy</h3>
+                <p class="mb-4 text-slate-300">منصة التعلم الرائدة في تقديم الدورات التعليمية عالية الجودة في مختلف المجالات. نهدف إلى تمكين الأفراد من خلال المعرفة والمهارات التي يحتاجونها لتحقيق أهدافهم.</p>
+                <div class="social-links flex gap-3 mt-6">
+                    <a href="#" class="social-link w-10 h-10 rounded-full flex items-center justify-center text-white no-underline transition-all duration-200 hover-lift" style="background-color: var(--card-bg)">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link w-10 h-10 rounded-full flex items-center justify-center text-white no-underline transition-all duration-200 hover-lift" style="background-color: var(--card-bg)">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link w-10 h-10 rounded-full flex items-center justify-center text-white no-underline transition-all duration-200 hover-lift" style="background-color: var(--card-bg)">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link w-10 h-10 rounded-full flex items-center justify-center text-white no-underline transition-all duration-200 hover-lift" style="background-color: var(--card-bg)">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="social-link w-10 h-10 rounded-full flex items-center justify-center text-white no-underline transition-all duration-200 hover-lift" style="background-color: var(--card-bg)">
+                        <i class="fab fa-youtube"></i>
+                    </a>
                 </div>
             </div>
             
-            <!-- قائمة المنتجات -->
-            <div class="products-section">
-                <h2 class="section-title">المنتجات المضافة</h2>
-                
-                <div class="loading" id="productsLoading">
-                    <div class="loading-spinner"></div>
-                </div>
-                
-                <div class="products-grid" id="productsGrid">
-                    <!-- المنتجات سيتم إضافتها هنا -->
-                </div>
-                
-                <div id="emptyState" class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <p>لا توجد منتجات مضافة حتى الآن</p>
-                    <p>استخدم النموذج أعلاه لإضافة منتجات جديدة</p>
-                </div>
+            <div class="footer-section">
+                <h3 class="text-xl font-bold mb-6" style="color: rgb(var(--color-primary))">روابط سريعة</h3>
+                <ul class="footer-links space-y-3">
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-home"></i> الرئيسية</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-book"></i> جميع الدورات</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-chalkboard-teacher"></i> المدربين</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-certificate"></i> الشهادات</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-info-circle"></i> عن الأكاديمية</a></li>
+                </ul>
             </div>
-        </main>
-    </div>
+            
+            <div class="footer-section">
+                <h3 class="text-xl font-bold mb-6" style="color: rgb(var(--color-primary))">مركز دعم المتعلم</h3>
+                <ul class="footer-links space-y-3">
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-question-circle"></i> الأسئلة الشائعة</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-headset"></i> الدعم الفني</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-comments"></i> تواصل معنا</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-file-alt"></i> سياسة الخصوصية</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-file-contract"></i> شروط الاستخدام</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="text-xl font-bold mb-6" style="color: rgb(var(--color-primary))">تواصل معنا</h3>
+                <ul class="footer-links space-y-3">
+                    <li><a href="tel:+249924299798" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-phone"></i> +249 924 299 798</a></li>
+                    <li><a href="mailto:info@skillzoy.com" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-envelope"></i> info@skillzoy.com</a></li>
+                    <li><a href="https://wa.me/0924299798" target="_blank" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fab fa-whatsapp"></i> واتساب</a></li>
+                    <li><a href="#" class="text-slate-300 no-underline transition-all duration-200 hover:text-white flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> العنوان: مدينة المعرفة، الرياض</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright text-center pt-8 mt-8 text-sm text-slate-400 border-t border-white/10">
+            <p>جميع الحقوق محفوظة &copy; 2025 Skillzoy Academy</p>
+        </div>
+    </footer>
 
     <script>
-        // 🔧 إعدادات Supabase
-        const SUPABASE_URL = 'https://nvwabjwlzzelzkizblss.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52d2FiandsenplbHpraXpibHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNDU1NDQsImV4cCI6MjA3NTkyMTU0NH0.AI9-rockiprdgbImyOoQCQ2p4wmI3MTJ6Fa-AX5_Nno';
+        // بيانات التطبيق
+        const coursesData = [
+            {
+                id: 1,
+                title: "Google Cybersecurity",
+                category: "programming",
+                instructor: "Skillzoy Academy",
+                instructorAvatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                playlistId: "PL590L5WQmH8d68VyR6RjhgldHMxMJ5B5z",
+                duration: "35 ساعة",
+                level: "متقدم",
+                description: "دورة الامن السيبراني من Google تدريب مكثف",
+                students: 1250,
+                rating: 4.8
+            },
+            {
+                id: 2,
+                title: "دورة اختبار الاختراق تدريب عملي CTF",
+                category: "programming",
+                instructor: "Skillzoy Academy",
+                instructorAvatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                playlistId: "PLyWDBIDk-uYlJ4Yn6vtjAjN1fpnJi2AXA",
+                duration: "28 ساعة",
+                level: "متوسط",
+                description: "تعلم تصميم واجهات المستخدم وتجربة المستخدم باستخدام أحدث الأدوات والتقنيات مع مشاريع عملية",
+                students: 890,
+                rating: 4.6
+            },
+            {
+                id: 3,
+                title: "دورة إدارة المشاريع الاحترافية - PMP و Agile",
+                category: "business",
+                instructor: "Skillzoy Academy",
+                instructorAvatar: "https://randomuser.me/api/portraits/men/67.jpg",
+                playlistId: "PLdPyS-4BsX-aNIxjgTAdM-6ZUHT2AYPyg",
+                duration: "32 ساعة",
+                level: "متقدم",
+                description: "تعلم كيفية إدارة المشاريع باحترافية باستخدام منهجيات PMP و Agile مع دراسات حالة عملية",
+                students: 1120,
+                rating: 4.7
+            },
+            {
+                id: 4,
+                title: "دورة تعلم اللغة الإنجليزية - المحادثة والكتابة",
+                category: "language",
+                instructor: "Skillzoy Academy",
+                instructorAvatar: "https://randomuser.me/api/portraits/women/68.jpg",
+                playlistId: "PL_Zjf61X10RJETKdhjfVLe4yL94morKRX",
+                duration: "40 ساعة",
+                level: "مبتدئ",
+                description: "تعلم اللغة الإنجليزية من الصفر حتى الاحتراف مع تمارين تفاعلية ونطق صحيح ومحادثة يومية",
+                students: 2150,
+                rating: 4.9
+            }
+        ];
 
-        // تهيئة Supabase
+        // عناصر DOM
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeOptions = document.querySelectorAll('.theme-option');
+        
+        // عناصر المحتوى
+        const dashboardContent = document.getElementById('dashboard-content');
+        const myCoursesContent = document.getElementById('my-courses-content');
+        
+        // عناصر التنقل
+        const dashboardLink = document.querySelector('.dashboard-link');
+        const coursesLink = document.querySelector('.courses-link');
+        const myCoursesLink = document.querySelector('.my-courses-link');
+        const profileLink = document.querySelector('.profile-link');
+        
+        // عناصر الصفحة
+        const coursesContainer = document.getElementById('courses-container');
+        const myCoursesContainer = document.getElementById('my-courses-container');
+        const emptyMyCourses = document.getElementById('empty-my-courses');
+        const browseCoursesBtn = document.getElementById('browse-courses-btn');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        
+        // عناصر الإحصائيات
+        const studentsCount = document.getElementById('students-count');
+        const coursesCount = document.getElementById('courses-count');
+        const certificatesCount = document.getElementById('certificates-count');
+        const instructorsCount = document.getElementById('instructors-count');
+        
+        // عناصر الفيديو
+        const videoPlayer = document.getElementById('video-player');
+        const closeVideo = document.getElementById('close-video');
+        const videoFrame = document.getElementById('video-frame');
+
+        // تهيئة Supabase (استبدل بالمفاتيح الحقيقية)
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // نظام الدخول
-        const loginScreen = document.getElementById('loginScreen');
-        const adminContent = document.getElementById('adminContent');
-        const loginBtn = document.getElementById('loginBtn');
-        const adminPassword = document.getElementById('adminPassword');
-        const errorMessage = document.getElementById('errorMessage');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const connectionStatus = document.getElementById('connectionStatus');
+        // متغيرات التطبيق
+        let currentUser = { id: 1, name: "نشط الان" };
+        let userCourses = JSON.parse(localStorage.getItem('userCourses')) || [];
+        let currentTheme = localStorage.getItem('theme') || 'blue';
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
-        // كلمة المرور
-        const correctPassword = "admin123Max";
-
-        // تحقق إذا كان المستخدم مسجل دخول
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            showAdminContent();
-        }
-
-        // زر الدخول
-        loginBtn.addEventListener('click', function() {
-            if (adminPassword.value === correctPassword) {
-                localStorage.setItem('adminLoggedIn', 'true');
-                showAdminContent();
+        // تحميل التفضيلات
+        function loadPreferences() {
+            // تطبيق الثيم
+            document.body.setAttribute('data-theme', currentTheme);
+            
+            // تطبيق الوضع الداكن
+            if (isDarkMode) {
+                document.body.classList.add('dark');
+                themeIcon.classList.remove('fa-toggle-off');
+                themeIcon.classList.add('fa-toggle-on');
             } else {
-                errorMessage.style.display = 'block';
-                adminPassword.style.borderColor = '#dc2626';
-            }
-        });
-
-        // الدخول بالإنتر
-        adminPassword.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loginBtn.click();
-            }
-        });
-
-        // زر الخروج
-        logoutBtn.addEventListener('click', function() {
-            localStorage.removeItem('adminLoggedIn');
-            hideAdminContent();
-        });
-
-        function showAdminContent() {
-            loginScreen.style.display = 'none';
-            adminContent.classList.remove('hidden');
-            testConnection();
-            loadProducts();
-        }
-
-        function hideAdminContent() {
-            loginScreen.style.display = 'flex';
-            adminContent.classList.add('hidden');
-            adminPassword.value = '';
-            errorMessage.style.display = 'none';
-            adminPassword.style.borderColor = '';
-        }
-
-        // DOM Elements
-        const productForm = document.getElementById('productForm');
-        const productsGrid = document.getElementById('productsGrid');
-        const emptyState = document.getElementById('emptyState');
-        const exportDataBtn = document.getElementById('exportData');
-        const importDataBtn = document.getElementById('importData');
-        const resetDataBtn = document.getElementById('resetData');
-        const formMessage = document.getElementById('formMessage');
-        const productsLoading = document.getElementById('productsLoading');
-        
-        // Preview elements
-        const previewName = document.getElementById('previewName');
-        const previewPrice = document.getElementById('previewPrice');
-        const previewOriginalPrice = document.getElementById('previewOriginalPrice');
-        const previewCategory = document.getElementById('previewCategory');
-        const previewImage = document.getElementById('previewImage');
-        const previewRating = document.getElementById('previewRating');
-        
-        // Form elements
-        const productName = document.getElementById('productName');
-        const productPrice = document.getElementById('productPrice');
-        const originalPrice = document.getElementById('originalPrice');
-        const productCategory = document.getElementById('productCategory');
-        const productImage = document.getElementById('productImage');
-        const productRating = document.getElementById('productRating');
-        
-        // اختبار الاتصال بقاعدة البيانات
-        async function testConnection() {
-            try {
-                connectionStatus.textContent = 'جاري التحقق من الاتصال بقاعدة البيانات...';
-                connectionStatus.className = 'connection-status info';
-                connectionStatus.style.display = 'block';
-                
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('id')
-                    .limit(1);
-                
-                if (error) throw error;
-                
-                connectionStatus.textContent = '✓ متصل بقاعدة البيانات بنجاح';
-                connectionStatus.className = 'connection-status success';
-                
-            } catch (error) {
-                console.error('Connection error:', error);
-                connectionStatus.textContent = '✗ خطأ في الاتصال بقاعدة البيانات: ' + error.message;
-                connectionStatus.className = 'connection-status error';
+                document.body.classList.remove('dark');
+                themeIcon.classList.remove('fa-toggle-on');
+                themeIcon.classList.add('fa-toggle-off');
             }
         }
-        
-        // Update preview on form changes
-        function updatePreview() {
-            previewName.textContent = productName.value || 'اسم المنتج';
-            previewPrice.textContent = (productPrice.value || '0') + ' ج.س';
+
+        // تغيير الثيم
+        function changeTheme(themeName) {
+            currentTheme = themeName;
+            document.body.setAttribute('data-theme', themeName);
+            localStorage.setItem('theme', themeName);
+            showNotification('تم تغيير الثيم', `تم تفعيل ثيم ${themeName}`, 'info');
+        }
+
+        // تبديل الوضع الداكن
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
             
-            if (originalPrice.value) {
-                previewOriginalPrice.textContent = originalPrice.value + ' ج.س';
-                previewOriginalPrice.style.display = 'inline';
+            if (isDarkMode) {
+                document.body.classList.add('dark');
+                themeIcon.classList.remove('fa-toggle-off');
+                themeIcon.classList.add('fa-toggle-on');
             } else {
-                previewOriginalPrice.style.display = 'none';
+                document.body.classList.remove('dark');
+                themeIcon.classList.remove('fa-toggle-on');
+                themeIcon.classList.add('fa-toggle-off');
             }
             
-            previewCategory.textContent = productCategory.value || 'التصنيف';
-            previewRating.textContent = productRating.value || '2.3K';
-            
-            if (productImage.value) {
-                previewImage.innerHTML = `<img src="${productImage.value}" alt="معاينة المنتج" style="width: 100%; height: 100%; object-fit: cover;">`;
-            } else {
-                previewImage.innerHTML = '<i class="fas fa-image"></i>';
-            }
+            localStorage.setItem('darkMode', isDarkMode);
+            showNotification('تم التغيير', isDarkMode ? 'تم تفعيل الوضع الداكن' : 'تم تفعيل وضع النهار', 'info');
         }
-        
-        // Add event listeners for form inputs
-        productName.addEventListener('input', updatePreview);
-        productPrice.addEventListener('input', updatePreview);
-        originalPrice.addEventListener('input', updatePreview);
-        productCategory.addEventListener('change', updatePreview);
-        productImage.addEventListener('input', updatePreview);
-        productRating.addEventListener('input', updatePreview);
-        
-        // Handle form submission
-        productForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+
+        // عرض الإشعارات
+        function showNotification(title, message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
             
-            const name = productName.value;
-            const price = parseFloat(productPrice.value);
-            const original_price = originalPrice.value ? parseFloat(originalPrice.value) : null;
-            const category = productCategory.value;
-            const image_url = productImage.value || 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
-            const rating = productRating.value || '2.3K';
+            const icon = type === 'success' ? 'fas fa-check-circle' : 
+                         type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
             
-            formMessage.textContent = 'جاري إضافة المنتج...';
-            formMessage.className = 'form-message warning';
-            formMessage.style.display = 'block';
+            // استخدام textContent بدلاً من innerHTML
+            const iconEl = document.createElement('div');
+            iconEl.className = 'notification-icon';
+            const iconI = document.createElement('i');
+            iconI.className = icon;
+            iconEl.appendChild(iconI);
             
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .insert([
-                        {
-                            name: name,
-                            price: price,
-                            original_price: original_price,
-                            category: category,
-                            image_url: image_url,
-                            rating: rating
+            const content = document.createElement('div');
+            content.className = 'notification-content';
+            
+            const titleEl = document.createElement('div');
+            titleEl.className = 'notification-title';
+            titleEl.textContent = title;
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'notification-message';
+            messageEl.textContent = message;
+            
+            content.appendChild(titleEl);
+            content.appendChild(messageEl);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'notification-close';
+            const closeIcon = document.createElement('i');
+            closeIcon.className = 'fas fa-times';
+            closeBtn.appendChild(closeIcon);
+            
+            notification.appendChild(iconEl);
+            notification.appendChild(content);
+            notification.appendChild(closeBtn);
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            closeBtn.addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            });
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
                         }
-                    ])
-                    .select();
+                    }, 400);
+                }
+            }, 3000);
+        }
 
-                if (error) throw error;
-
-                formMessage.textContent = 'تم إضافة المنتج بنجاح!';
-                formMessage.className = 'form-message success';
-                
-                productForm.reset();
-                // إعادة تعيين حقل التقييم للقيمة الافتراضية
-                productRating.value = '2.3K';
-                updatePreview();
-                loadProducts();
-                
-            } catch (error) {
-                console.error('Error adding product:', error);
-                formMessage.textContent = 'حدث خطأ أثناء إضافة المنتج: ' + error.message;
-                formMessage.className = 'form-message error';
-            }
-        });
-        
-        // Load products from Supabase
-        async function loadProducts() {
-            productsLoading.style.display = 'flex';
-            productsGrid.innerHTML = '';
-            emptyState.style.display = 'none';
+        // عرض الدورات
+        function renderCourses(category = 'all') {
+            coursesContainer.innerHTML = '';
             
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+            const filteredCourses = category === 'all' 
+                ? coursesData 
+                : coursesData.filter(course => course.category === category);
+            
+            if (filteredCourses.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'col-span-full text-center p-8 text-slate-400';
+                emptyMessage.textContent = 'لا توجد دورات في هذا التصنيف';
+                coursesContainer.appendChild(emptyMessage);
+                return;
+            }
+            
+            filteredCourses.forEach(course => {
+                const courseCard = createCourseCard(course);
+                coursesContainer.appendChild(courseCard);
+            });
+        }
 
-                if (error) throw error;
+        // إنشاء بطاقة دورة
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card card-glass rounded-xl overflow-hidden shadow-glow theme-transition hover-lift';
+            card.setAttribute('data-course-id', course.id);
+            
+            const isEnrolled = userCourses.includes(course.id);
+            
+            // استخدام createElement بدلاً من innerHTML
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'course-video-container h-48 relative overflow-hidden';
+            
+            const videoWrapper = document.createElement('div');
+            videoWrapper.className = 'video-wrapper relative w-full h-0 pb-[56.25%]';
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${course.playlistId.split(',')[0]}?rel=0&modestbranding=1`;
+            iframe.title = course.title;
+            iframe.className = 'absolute top-0 left-0 w-full h-full border-none';
+            iframe.allowFullscreen = true;
+            
+            videoWrapper.appendChild(iframe);
+            videoContainer.appendChild(videoWrapper);
+            
+            const content = document.createElement('div');
+            content.className = 'course-content p-4';
+            
+            const category = document.createElement('span');
+            category.className = 'course-category skill-tag mb-3';
+            category.textContent = getCategoryName(course.category);
+            
+            const title = document.createElement('h3');
+            title.className = 'course-title text-lg font-bold text-white mb-2';
+            title.textContent = course.title;
+            
+            const instructor = document.createElement('div');
+            instructor.className = 'course-instructor flex items-center gap-2 mb-3';
+            
+            const instructorImg = document.createElement('img');
+            instructorImg.src = course.instructorAvatar;
+            instructorImg.alt = course.instructor;
+            instructorImg.className = 'instructor-avatar w-8 h-8 rounded-full object-cover border-2';
+            instructorImg.style.borderColor = `rgb(var(--color-primary))`;
+            
+            const instructorName = document.createElement('span');
+            instructorName.className = 'instructor-name text-sm text-slate-300';
+            instructorName.textContent = course.instructor;
+            
+            instructor.appendChild(instructorImg);
+            instructor.appendChild(instructorName);
+            
+            const meta = document.createElement('div');
+            meta.className = 'course-meta flex gap-4 mb-4 text-slate-400 text-sm';
+            
+            const duration = document.createElement('span');
+            duration.className = 'flex items-center gap-1';
+            const durationIcon = document.createElement('i');
+            durationIcon.className = 'far fa-clock';
+            duration.appendChild(durationIcon);
+            duration.appendChild(document.createTextNode(` ${course.duration}`));
+            
+            const level = document.createElement('span');
+            level.className = 'flex items-center gap-1';
+            const levelIcon = document.createElement('i');
+            levelIcon.className = 'fas fa-signal';
+            level.appendChild(levelIcon);
+            level.appendChild(document.createTextNode(` ${course.level}`));
+            
+            meta.appendChild(duration);
+            meta.appendChild(level);
+            
+            const actions = document.createElement('div');
+            actions.className = 'course-actions flex gap-2';
+            
+            if (isEnrolled) {
+                const viewBtn = document.createElement('button');
+                viewBtn.className = 'view-course-details flex-1 text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2';
+                viewBtn.style.backgroundColor = '#10b981';
+                viewBtn.setAttribute('data-course-id', course.id);
                 
-                if (!data || data.length === 0) {
-                    emptyState.style.display = 'block';
-                    return;
+                const viewIcon = document.createElement('i');
+                viewIcon.className = 'fas fa-play';
+                const viewText = document.createTextNode(' عرض الدورة');
+                
+                viewBtn.appendChild(viewIcon);
+                viewBtn.appendChild(viewText);
+                actions.appendChild(viewBtn);
+            } else {
+                const enrollBtn = document.createElement('button');
+                enrollBtn.className = 'enroll-course flex-1 text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2';
+                enrollBtn.style.background = `linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-dark)) 100%)`;
+                enrollBtn.setAttribute('data-course-id', course.id);
+                
+                const enrollIcon = document.createElement('i');
+                enrollIcon.className = 'fas fa-user-plus';
+                const enrollText = document.createTextNode(' التسجيل');
+                
+                enrollBtn.appendChild(enrollIcon);
+                enrollBtn.appendChild(enrollText);
+                actions.appendChild(enrollBtn);
+            }
+            
+            const trailerBtn = document.createElement('button');
+            trailerBtn.className = 'watch-trailer px-3 py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2';
+            trailerBtn.style.backgroundColor = 'transparent';
+            trailerBtn.style.border = `1px solid rgb(var(--color-primary))`;
+            trailerBtn.style.color = `rgb(var(--color-primary))`;
+            trailerBtn.setAttribute('data-youtube-id', course.playlistId.split(',')[0]);
+            
+            const trailerIcon = document.createElement('i');
+            trailerIcon.className = 'fas fa-eye';
+            trailerBtn.appendChild(trailerIcon);
+            actions.appendChild(trailerBtn);
+            
+            content.appendChild(category);
+            content.appendChild(title);
+            content.appendChild(instructor);
+            content.appendChild(meta);
+            content.appendChild(actions);
+            
+            card.appendChild(videoContainer);
+            card.appendChild(content);
+            
+            return card;
+        }
+
+        // عرض دوراتي
+        function renderMyCourses() {
+            myCoursesContainer.innerHTML = '';
+            
+            const enrolledCourses = coursesData.filter(course => 
+                userCourses.includes(course.id)
+            );
+            
+            if (enrolledCourses.length === 0) {
+                emptyMyCourses.classList.remove('hidden');
+                return;
+            }
+            
+            emptyMyCourses.classList.add('hidden');
+            
+            enrolledCourses.forEach(course => {
+                const courseCard = createMyCourseCard(course);
+                myCoursesContainer.appendChild(courseCard);
+            });
+        }
+
+        // إنشاء بطاقة دورة في صفحة دوراتي
+        function createMyCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card card-glass rounded-xl overflow-hidden shadow-glow theme-transition hover-lift';
+            card.setAttribute('data-course-id', course.id);
+            
+            // استخدام نفس هيكل createCourseCard مع تعديلات بسيطة
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'course-video-container h-48 relative overflow-hidden';
+            
+            const videoWrapper = document.createElement('div');
+            videoWrapper.className = 'video-wrapper relative w-full h-0 pb-[56.25%]';
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${course.playlistId.split(',')[0]}?rel=0&modestbranding=1`;
+            iframe.title = course.title;
+            iframe.className = 'absolute top-0 left-0 w-full h-full border-none';
+            iframe.allowFullscreen = true;
+            
+            videoWrapper.appendChild(iframe);
+            videoContainer.appendChild(videoWrapper);
+            
+            const content = document.createElement('div');
+            content.className = 'course-content p-4';
+            
+            const category = document.createElement('span');
+            category.className = 'course-category skill-tag mb-3';
+            category.textContent = getCategoryName(course.category);
+            
+            const title = document.createElement('h3');
+            title.className = 'course-title text-lg font-bold text-white mb-2';
+            title.textContent = course.title;
+            
+            const instructor = document.createElement('div');
+            instructor.className = 'course-instructor flex items-center gap-2 mb-3';
+            
+            const instructorImg = document.createElement('img');
+            instructorImg.src = course.instructorAvatar;
+            instructorImg.alt = course.instructor;
+            instructorImg.className = 'instructor-avatar w-8 h-8 rounded-full object-cover border-2';
+            instructorImg.style.borderColor = `rgb(var(--color-primary))`;
+            
+            const instructorName = document.createElement('span');
+            instructorName.className = 'instructor-name text-sm text-slate-300';
+            instructorName.textContent = course.instructor;
+            
+            instructor.appendChild(instructorImg);
+            instructor.appendChild(instructorName);
+            
+            const meta = document.createElement('div');
+            meta.className = 'course-meta flex gap-4 mb-4 text-slate-400 text-sm';
+            
+            const duration = document.createElement('span');
+            duration.className = 'flex items-center gap-1';
+            const durationIcon = document.createElement('i');
+            durationIcon.className = 'far fa-clock';
+            duration.appendChild(durationIcon);
+            duration.appendChild(document.createTextNode(` ${course.duration}`));
+            
+            const level = document.createElement('span');
+            level.className = 'flex items-center gap-1';
+            const levelIcon = document.createElement('i');
+            levelIcon.className = 'fas fa-signal';
+            level.appendChild(levelIcon);
+            level.appendChild(document.createTextNode(` ${course.level}`));
+            
+            meta.appendChild(duration);
+            meta.appendChild(level);
+            
+            const actions = document.createElement('div');
+            actions.className = 'course-actions flex gap-2';
+            
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'view-course-details flex-1 text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2';
+            viewBtn.style.backgroundColor = '#10b981';
+            viewBtn.setAttribute('data-course-id', course.id);
+            
+            const viewIcon = document.createElement('i');
+            viewIcon.className = 'fas fa-play';
+            const viewText = document.createTextNode(' عرض الدورة');
+            
+            viewBtn.appendChild(viewIcon);
+            viewBtn.appendChild(viewText);
+            actions.appendChild(viewBtn);
+            
+            const unenrollBtn = document.createElement('button');
+            unenrollBtn.className = 'unenroll-course text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2';
+            unenrollBtn.style.backgroundColor = '#ef4444';
+            unenrollBtn.setAttribute('data-course-id', course.id);
+            
+            const unenrollIcon = document.createElement('i');
+            unenrollIcon.className = 'fas fa-times';
+            unenrollBtn.appendChild(unenrollIcon);
+            actions.appendChild(unenrollBtn);
+            
+            content.appendChild(category);
+            content.appendChild(title);
+            content.appendChild(instructor);
+            content.appendChild(meta);
+            content.appendChild(actions);
+            
+            card.appendChild(videoContainer);
+            card.appendChild(content);
+            
+            return card;
+        }
+
+        // الحصول على اسم التصنيف
+        function getCategoryName(category) {
+            const categories = {
+                'programming': 'برمجة',
+                'design': 'تصميم',
+                'business': 'أعمال',
+                'language': 'لغات'
+            };
+            return categories[category] || category;
+        }
+
+        // تسجيل المستخدم في دورة
+        function enrollUserInCourse(courseId) {
+            if (!userCourses.includes(courseId)) {
+                userCourses.push(courseId);
+                localStorage.setItem('userCourses', JSON.stringify(userCourses));
+                showNotification('تم التسجيل بنجاح', 'تم تسجيلك في الدورة بنجاح!', 'success');
+                return true;
+            } else {
+                showNotification('معلومات', 'أنت مسجل مسبقاً في هذه الدورة.', 'info');
+                return false;
+            }
+        }
+
+        // إلغاء تسجيل المستخدم من دورة
+        function unenrollUserFromCourse(courseId) {
+            const index = userCourses.indexOf(courseId);
+            if (index !== -1) {
+                userCourses.splice(index, 1);
+                localStorage.setItem('userCourses', JSON.stringify(userCourses));
+                showNotification('تم الإلغاء بنجاح', 'تم إلغاء تسجيلك في الدورة بنجاح.', 'info');
+                return true;
+            } else {
+                showNotification('خطأ', 'لم تكن مسجلاً في هذه الدورة.', 'error');
+                return false;
+            }
+        }
+
+        // فتح مشغل الفيديو
+        function openVideoPlayer(youtubeId) {
+            videoFrame.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+            videoPlayer.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // إغلاق مشغل الفيديو
+        function closeVideoPlayer() {
+            videoPlayer.classList.add('hidden');
+            videoFrame.src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            let totalStudents = 0;
+            coursesData.forEach(course => {
+                totalStudents += course.students;
+            });
+            
+            studentsCount.textContent = totalStudents.toLocaleString();
+            coursesCount.textContent = coursesData.length;
+            certificatesCount.textContent = '1,250';
+            instructorsCount.textContent = '24';
+        }
+
+        // عرض لوحة التحكم
+        function showDashboard() {
+            dashboardContent.classList.remove('hidden');
+            myCoursesContent.classList.add('hidden');
+            updateActiveSidebarItem(dashboardLink);
+        }
+
+        // عرض دوراتي
+        function showMyCourses() {
+            dashboardContent.classList.add('hidden');
+            myCoursesContent.classList.remove('hidden');
+            renderMyCourses();
+            updateActiveSidebarItem(myCoursesLink);
+        }
+
+        // تحديث العنصر النشط في الشريط الجانبي
+        function updateActiveSidebarItem(activeItem) {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            activeItem.classList.add('active');
+        }
+
+        // إظهار/إخفاء الشريط الجانبي على الجوال
+        function toggleMobileSidebar() {
+            if (sidebar.style.transform === 'translateX(-100%)') {
+                sidebar.style.transform = 'translateX(0)';
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+        }
+
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // أحداث الشريط الجانبي
+            mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+            closeSidebarBtn.addEventListener('click', () => {
+                sidebar.style.transform = 'translateX(-100%)';
+            });
+            
+            // أحداث الثيمات
+            themeToggle.addEventListener('click', toggleDarkMode);
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    changeTheme(theme);
+                });
+            });
+            
+            // أحداث التنقل
+            dashboardLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showDashboard();
+            });
+            
+            coursesLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showDashboard();
+            });
+            
+            myCoursesLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showMyCourses();
+            });
+            
+            profileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotification('قريباً', 'صفحة البروفايل قريباً', 'info');
+            });
+            
+            // أحداث التصفية
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    categoryFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.getAttribute('data-category');
+                    renderCourses(category);
+                });
+            });
+            
+            // أحداث الدورات (يتم إضافتها بعد renderCourses)
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('enroll-course') || e.target.parentElement.classList.contains('enroll-course')) {
+                    const courseId = parseInt(e.target.getAttribute('data-course-id') || e.target.parentElement.getAttribute('data-course-id'));
+                    if (enrollUserInCourse(courseId)) {
+                        renderCourses();
+                        renderMyCourses();
+                    }
                 }
                 
-                emptyState.style.display = 'none';
+                if (e.target.classList.contains('unenroll-course') || e.target.parentElement.classList.contains('unenroll-course')) {
+                    const courseId = parseInt(e.target.getAttribute('data-course-id') || e.target.parentElement.getAttribute('data-course-id'));
+                    if (unenrollUserFromCourse(courseId)) {
+                        renderCourses();
+                        renderMyCourses();
+                    }
+                }
                 
-                data.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    
-                    productCard.innerHTML = `
-                        <img src="${product.image_url}" alt="${product.name}" class="product-image">
-                        <div class="product-content">
-                            <div class="product-category">${product.category}</div>
-                            <h3 class="product-title">${product.name}</h3>
-                            
-                            <!-- إضافة التقييم في البطاقة -->
-                            <div class="product-rating">
-                                <i class="fas fa-heart"></i>
-                                <span class="rating-count">${product.rating || '2.3K'}</span>
-                            </div>
-                            
-                            <div class="product-price">
-                                <span class="current-price">${product.price} ج.س</span>
-                                ${product.original_price ? `<span class="original-price">${product.original_price} ج.س</span>` : ''}
-                            </div>
-                            
-                            <div class="product-actions">
-                                <button class="action-btn delete-btn" data-id="${product.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    productsGrid.appendChild(productCard);
-                });
-                
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.getAttribute('data-id');
-                        deleteProduct(id);
-                    });
-                });
-                
-            } catch (error) {
-                console.error('Error loading products:', error);
-                emptyState.style.display = 'block';
-                emptyState.innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>حدث خطأ في تحميل المنتجات</p>
-                    <p>${error.message}</p>
-                `;
-            } finally {
-                productsLoading.style.display = 'none';
-            }
-        }
-        
-        // Delete product from Supabase
-        async function deleteProduct(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                return;
-            }
+                if (e.target.classList.contains('watch-trailer') || e.target.parentElement.classList.contains('watch-trailer')) {
+                    const youtubeId = e.target.getAttribute('data-youtube-id') || e.target.parentElement.getAttribute('data-youtube-id');
+                    openVideoPlayer(youtubeId);
+                }
+            });
             
-            try {
-                const { error } = await supabase
-                    .from('products')
-                    .delete()
-                    .eq('id', id);
-                
-                if (error) throw error;
-                
-                await loadProducts();
-                
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                alert('حدث خطأ أثناء حذف المنتج: ' + error.message);
-            }
-        }
-        
-        // Export data
-        exportDataBtn.addEventListener('click', async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*');
-                
-                if (error) throw error;
-                
-                const dataStr = JSON.stringify(data, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = 'future-store-products-backup.json';
-                link.click();
-                
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                alert('حدث خطأ أثناء تصدير البيانات: ' + error.message);
-            }
-        });
-        
-        // Import data (وظيفة أساسية)
-        importDataBtn.addEventListener('click', () => {
-            alert('وظيفة استيراد البيانات قيد التطوير. حالياً يمكنك استخدام تصدير البيانات للنسخ الاحتياطي.');
-        });
-        
-        // Reset data
-        resetDataBtn.addEventListener('click', async () => {
-            if (!confirm('هل أنت متأكد من مسح جميع المنتجات؟ هذا الإجراء لا يمكن التراجع عنه.')) {
-                return;
-            }
+            // أحداث الفيديو
+            closeVideo.addEventListener('click', closeVideoPlayer);
+            videoPlayer.addEventListener('click', function(e) {
+                if (e.target.id === 'video-player') {
+                    closeVideoPlayer();
+                }
+            });
             
-            try {
-                const { error } = await supabase
-                    .from('products')
-                    .delete()
-                    .neq('id', 0); // حذف جميع المنتجات
-                
-                if (error) throw error;
-                
-                await loadProducts();
-                alert('تم مسح جميع المنتجات بنجاح');
-                
-            } catch (error) {
-                console.error('Error resetting data:', error);
-                alert('حدث خطأ أثناء مسح البيانات: ' + error.message);
-            }
-        });
-        
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            updatePreview();
-        });
+            // أحداث أخرى
+            browseCoursesBtn.addEventListener('click', showDashboard);
+            
+            // إغلاق الشريط الجانبي عند النقر خارجها على الجوال
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth < 1024 && 
+                    !sidebar.contains(e.target) && 
+                    !mobileMenuBtn.contains(e.target) && 
+                    sidebar.style.transform === 'translateX(0)') {
+                    sidebar.style.transform = 'translateX(-100%)';
+                }
+            });
+        }
+
+        // تهيئة التطبيق
+        function init() {
+            loadPreferences();
+            renderCourses();
+            renderMyCourses();
+            updateStats();
+            setupEventListeners();
+            
+            console.log('✅ Skillzoy Academy System Initialized Successfully');
+        }
+
+        // بدء التطبيق
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
