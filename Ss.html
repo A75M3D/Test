@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة التعلم الإلكتروني</title>
+    <!-- تضمين Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين أيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        .video-container {
+            transition: all 0.5s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .video-container.active {
+            max-height: 600px;
+            padding-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- شريط التنقل -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">
+                <i class="fas fa-graduation-cap mr-2"></i>منصة التعلم الإلكتروني
+            </h1>
+            <div class="space-x-4 flex items-center">
+                <a href="#home" class="font-medium hover:text-blue-600 px-3 py-1 rounded hover:bg-blue-50">الرئيسية</a>
+                <a href="#my-courses" class="font-medium hover:text-blue-600 px-3 py-1 rounded hover:bg-blue-50">دوراتي</a>
+                <a href="#progress" class="font-medium hover:text-blue-600 px-3 py-1 rounded hover:bg-blue-50">التقدم</a>
+                <button id="toggle-mode" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- قسم التصنيفات -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-700">تصفح الدورات حسب المجال</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-8">
+                <button class="category-btn py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md active" data-category="all">
+                    <i class="fas fa-th-large ml-2"></i>جميع الدورات
+                </button>
+                <button class="category-btn py-3 px-4 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition shadow-md" data-category="programming">
+                    <i class="fas fa-code ml-2"></i>البرمجة
+                </button>
+                <button class="category-btn py-3 px-4 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700 transition shadow-md" data-category="business">
+                    <i class="fas fa-briefcase ml-2"></i>الأعمال
+                </button>
+                <button class="category-btn py-3 px-4 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition shadow-md" data-category="ai">
+                    <i class="fas fa-robot ml-2"></i>الذكاء الاصطناعي
+                </button>
+            </div>
+            
+            <!-- شريط البحث -->
+            <div class="max-w-2xl mx-auto mb-12">
+                <div class="relative">
+                    <input type="text" id="search-courses" placeholder="ابحث عن دورة أو موضوع..." 
+                           class="w-full p-4 pr-12 rounded-xl border-2 border-gray-300 focus:border-blue-500 focus:outline-none shadow-sm">
+                    <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- عرض الدورات -->
+        <section id="courses-container" class="mb-16">
+            <h2 id="courses-title" class="text-3xl font-bold mb-8 text-gray-700 border-r-4 border-blue-500 pr-4">الدورات المتاحة</h2>
+            <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </section>
+
+        <!-- قسم دوراتي والتقدم -->
+        <section id="my-courses-section" class="bg-white p-8 rounded-2xl shadow-xl mb-12 border border-gray-200">
+            <h2 class="text-3xl font-bold mb-6 text-gray-700 border-b pb-4">
+                <i class="fas fa-user-graduate text-blue-600 ml-3"></i>دوراتي وتقدمي
+            </h2>
+            <div id="enrolled-courses-list">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+                <div class="text-center py-12">
+                    <i class="fas fa-book-open text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-xl mb-2">لم تسجل في أي دورة بعد</p>
+                    <p class="text-gray-400">سجل في دورة من الأعلى لتبدأ رحلتك التعليمية!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- نافذة الشهادة -->
+    <div id="certificate-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center transform transition-all duration-300 scale-95">
+            <div class="w-24 h-24 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-certificate text-white text-4xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3 text-gray-800">تهانينا! لقد أكملت الدورة</h3>
+            <p id="certificate-course-title" class="text-gray-600 mb-6 text-lg font-medium"></p>
+            <p class="mb-6 text-gray-500">تم إرسال شهادتك إلى بريدك الإلكتروني. يمكنك أيضًا تحميلها من صفحة <a href="#certificates" class="text-blue-600 font-semibold hover:underline">الشهادات</a>.</p>
+            <div class="flex space-x-3 space-x-reverse">
+                <button id="close-modal-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">حسنًا</button>
+                <button id="download-certificate-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                    <i class="fas fa-download ml-2"></i>تحميل
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white text-center py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-4">منصة التعلم الإلكتروني</h3>
+            <p class="mb-4 text-gray-300">نساعدك على تطوير مهاراتك وتحقيق أهدافك المهنية</p>
+            <div class="flex justify-center space-x-6 space-x-reverse text-2xl mb-6">
+                <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="text-gray-400">© 2023 منصة التعلم الإلكتروني. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script>
+        // بيانات الدورات مع رواقع YouTube الفعلية
+        const courses = [
+            {
+                id: 1,
+                title: "React.js - من البداية إلى الاحتراف",
+                category: "programming",
+                description: "تعلم بناء تطبيقات ويب تفاعلية باستخدام مكتبة React.js الشهيرة. ستتعلم المكونات، الحالة، الخصائص، والتوجيه.",
+                youtubePlaylistId: "PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS",
+                duration: "12 ساعة",
+                level: "متوسط",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "أحمد محمد",
+                rating: 4.8,
+                students: 12500
+            },
+            {
+                id: 2,
+                title: "Excel المتقدم - تحليل البيانات",
+                category: "business",
+                description: "إتقان الصيغ المعقدة، الجداول المحورية، وأدوات تحليل البيانات في Excel لمتخذي القرارات.",
+                youtubePlaylistId: "PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK",
+                duration: "8 ساعات",
+                level: "متقدم",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "سارة الخالد",
+                rating: 4.9,
+                students: 8900
+            },
+            {
+                id: 3,
+                title: "مبادئ الذكاء الاصطناعي والتعلم الآلي",
+                category: "ai",
+                description: "مدخل عملي لفهم أساسيات الذكاء الاصطناعي وأنظمة التعلم الآلي وتطبيقاتها العملية.",
+                youtubePlaylistId: "PLkDaE6sCZn6FNC6YRfRQc_FbeQrF8BwGI",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLkDaE6sCZn6FNC6YRfRQc_FbeQrF8BwGI",
+                duration: "15 ساعة",
+                level: "مبتدئ",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "د. خالد العلي",
+                rating: 4.7,
+                students: 15600
+            },
+            {
+                id: 4,
+                title: "فنون خدمة العملاء",
+                category: "business",
+                description: "تطوير مهارات التواصل وحل المشكلات لتقديم تجربة عملاء استثنائية وزيادة الولاء.",
+                youtubePlaylistId: "PLz8ax6_pdePGTvDEqXkfpp1s7jYXbuBrP",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLz8ax6_pdePGTvDEqXkfpp1s7jYXbuBrP",
+                duration: "6 ساعات",
+                level: "مبتدئ",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "لمى السعيد",
+                rating: 4.6,
+                students: 7400
+            },
+            {
+                id: 5,
+                title: "Python للأتمتة وتحليل البيانات",
+                category: "programming",
+                description: "استخدام لغة Python في أتمتة المهام وتحليل مجموعات البيانات وإنشاء تقارير تفاعلية.",
+                youtubePlaylistId: "PLQVvvaa0QuDe8XSftW-RAxdo6OmaeL85M",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLQVvvaa0QuDe8XSftW-RAxdo6OmaeL85M",
+                duration: "10 ساعات",
+                level: "متوسط",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "عمر الفاروق",
+                rating: 4.8,
+                students: 11200
+            },
+            {
+                id: 6,
+                title: "تعلم الآلة مع TensorFlow",
+                category: "ai",
+                description: "بناء نماذج تعلم آلي متقدمة باستخدام إطار عمل TensorFlow وتطبيقات عملية.",
+                youtubePlaylistId: "PLhhyoLH6IjfxpLWy7vtV5g7tUfFk3dP-e",
+                videoUrl: "https://www.youtube.com/embed/videoseries?list=PLhhyoLH6IjfxpLWy7vtV5g7tUfFk3dP-e",
+                duration: "14 ساعة",
+                level: "متقدم",
+                enrolled: false,
+                completed: false,
+                progress: 0,
+                instructor: "د. محمد شاهين",
+                rating: 4.9,
+                students: 6800
+            }
+        ];
+
+        // عناصر DOM
+        const coursesGrid = document.getElementById('courses-grid');
+        const enrolledCoursesList = document.getElementById('enrolled-courses-list');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const certificateModal = document.getElementById('certificate-modal');
+        const certificateCourseTitle = document.getElementById('certificate-course-title');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const downloadCertificateBtn = document.getElementById('download-certificate-btn');
+        const searchInput = document.getElementById('search-courses');
+        const toggleModeBtn = document.getElementById('toggle-mode');
+
+        // تهيئة الصفحة
+        function init() {
+            // تعيين بعض الدورات كممسجلة للعرض التوضيحي
+            courses[0].enrolled = true;
+            courses[0].progress = 40;
+            courses[3].enrolled = true;
+            courses[3].progress = 100;
+            courses[3].completed = true;
+            
+            renderAllCourses();
+            renderMyCourses();
+            setupEventListeners();
+        }
+
+        // عرض جميع الدورات
+        function renderAllCourses() {
+            coursesGrid.innerHTML = '';
+            courses.forEach(course => {
+                const courseCard = createCourseCard(course);
+                coursesGrid.appendChild(courseCard);
+            });
+        }
+
+        // إنشاء بطاقة دورة
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = `course-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 ${course.category}`;
+            card.dataset.id = course.id;
+
+            // زر الحالة الديناميكي
+            let actionButton = '';
+            if (!course.enrolled) {
+                actionButton = `
+                <button class="enroll-btn w-full mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-1 shadow-md" data-id="${course.id}">
+                    <i class="fas fa-user-plus ml-2"></i>سجل في الدورة
+                </button>`;
+            } else if (!course.completed) {
+                actionButton = `
+                <div class="mt-4">
+                    <button class="start-btn w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-1 shadow-md mb-2" data-id="${course.id}">
+                        <i class="fas fa-play ml-2"></i>ابدأ التعلم
+                    </button>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>تقدمك</span>
+                        <span>${course.progress}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="progress-bar bg-gradient-to-r from-blue-400 to-blue-500 h-2.5 rounded-full" style="width: ${course.progress}%"></div>
+                    </div>
+                </div>`;
+            } else {
+                actionButton = `
+                <div class="mt-4">
+                    <button class="view-certificate-btn w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-1 shadow-md mb-2" data-id="${course.id}">
+                        <i class="fas fa-certificate ml-2"></i>عرض الشهادة
+                    </button>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>الحالة</span>
+                        <span class="text-green-600 font-semibold">مكتمل</span>
+                    </div>
+                </div>`;
+            }
+
+            // حاوية الفيديو (مخفية افتراضيًا)
+            const videoContainer = `
+            <div class="video-container mt-4 rounded-xl overflow-hidden">
+                <div class="bg-black p-2 flex justify-between items-center">
+                    <span class="text-white font-medium"><i class="fas fa-video ml-2"></i>مشغّل الدورة</span>
+                    <button class="close-video-btn text-white hover:text-gray-300 p-1" data-id="${course.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="relative pb-[56.25%] h-0">
+                    <iframe 
+                        src="${course.videoUrl}" 
+                        class="absolute top-0 left-0 w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        title="${course.title}">
+                    </iframe>
+                </div>
+            </div>`;
+
+            card.innerHTML = `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-1">${course.title}</h3>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fas fa-user ml-2"></i>
+                                <span>${course.instructor}</span>
+                                <i class="fas fa-clock mr-4 ml-4"></i>
+                                <span>${course.duration}</span>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${getCategoryClass(course.category)}">${getCategoryName(course.category)}</span>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4">${course.description}</p>
+                    
+                    <div class="flex justify-between items-center mb-4 text-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-500 ml-1"></i>
+                            <span class="font-semibold">${course.rating}</span>
+                            <span class="text-gray-500 mr-2">(${formatNumber(course.students)})</span>
+                        </div>
+                        <span class="px-2 py-1 rounded ${getLevelClass(course.level)}">${course.level}</span>
+                    </div>
+                    
+                    ${actionButton}
+                    ${videoContainer}
+                </div>
+            `;
+            return card;
+        }
+
+        // عرض دوراتي
+        function renderMyCourses() {
+            const enrolledCourses = courses.filter(c => c.enrolled);
+            if (enrolledCourses.length === 0) {
+                enrolledCoursesList.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-book-open text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-xl mb-2">لم تسجل في أي دورة بعد</p>
+                    <p class="text-gray-400">سجل في دورة من الأعلى لتبدأ رحلتك التعليمية!</p>
+                </div>`;
+                return;
+            }
+
+            enrolledCoursesList.innerHTML = '';
+            enrolledCourses.forEach(course => {
+                const courseItem = document.createElement('div');
+                courseItem.className = 'bg-gradient-to-r from-gray-50 to-white p-6 rounded-xl mb-6 border border-gray-200 shadow-sm';
+                courseItem.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg text-gray-800 mb-1">${course.title}</h4>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold ${getCategoryClass(course.category)} mr-3">${getCategoryName(course.category)}</span>
+                                <i class="fas fa-chalkboard-teacher ml-2"></i>
+                                <span>${course.instructor}</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 mb-1">${course.progress}%</div>
+                            <div class="w-32 bg-gray-300 rounded-full h-2.5">
+                                <div class="bg-gradient-to-r from-blue-400 to-blue-500 h-2.5 rounded-full progress-bar" style="width: ${course.progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 space-x-reverse">
+                        <button class="continue-btn flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-0.5 shadow-md" data-id="${course.id}">
+                            <i class="fas fa-play ml-2"></i>${course.progress === 0 ? 'ابدأ التعلم' : 'استكمال التعلم'}
+                        </button>
+                        <button class="show-video-btn flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-0.5 shadow-md" data-id="${course.id}">
+                            <i class="fas fa-video ml-2"></i>عرض الدروس
+                        </button>
+                        <button class="complete-btn ${course.completed ? 'bg-gray-400' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'} text-white font-bold py-3 px-4 rounded-lg transition transform hover:-translate-y-0.5 shadow-md" data-id="${course.id}" ${course.completed ? 'disabled' : ''}>
+                            <i class="fas fa-flag-checkered ml-2"></i>${course.completed ? 'مكتمل' : 'إكمال الدورة'}
+                        </button>
+                    </div>
+                `;
+                enrolledCoursesList.appendChild(courseItem);
+            });
+        }
+
+        // تصفية الدورات حسب التصنيف
+        function filterCourses(category) {
+            const cards = document.querySelectorAll('.course-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            const titleElement = document.getElementById('courses-title');
+            if (category === 'all') {
+                titleElement.textContent = 'الدورات المتاحة';
+            } else {
+                titleElement.textContent = `دورات ${getCategoryName(category)}`;
+            }
+        }
+
+        // البحث في الدورات
+        function searchCourses(query) {
+            const cards = document.querySelectorAll('.course-card');
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const searchTerm = query.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // إظهار/إخفاء فيديو الدورة
+        function toggleVideo(courseId, show) {
+            const card = document.querySelector(`.course-card[data-id="${courseId}"]`);
+            if (!card) return;
+            
+            const videoContainer = card.querySelector('.video-container');
+            if (!videoContainer) return;
+            
+            if (show) {
+                // إغلاق جميع الفيديوهات المفتوحة أولاً
+                document.querySelectorAll('.video-container.active').forEach(container => {
+                    if (!container.closest(`.course-card[data-id="${courseId}"]`)) {
+                        container.classList.remove('active');
+                    }
+                });
+                
+                videoContainer.classList.add('active');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                videoContainer.classList.remove('active');
+            }
+        }
+
+        // إظهار إشعار الشهادة
+        function showCertificate(courseTitle) {
+            certificateCourseTitle.textContent = courseTitle;
+            certificateModal.classList.remove('hidden');
+            setTimeout(() => {
+                certificateModal.querySelector('.scale-95').classList.remove('scale-95');
+            }, 10);
+        }
+
+        // دوال مساعدة
+        function getCategoryClass(category) {
+            const classes = {
+                'programming': 'bg-blue-100 text-blue-800',
+                'business': 'bg-green-100 text-green-800',
+                'ai': 'bg-yellow-100 text-yellow-800'
+            };
+            return classes[category] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'programming': 'البرمجة',
+                'business': 'الأعمال',
+                'ai': 'الذكاء الاصطناعي'
+            };
+            return names[category] || 'عام';
+        }
+
+        function getLevelClass(level) {
+            const classes = {
+                'مبتدئ': 'bg-green-100 text-green-800',
+                'متوسط': 'bg-blue-100 text-blue-800',
+                'متقدم': 'bg-purple-100 text-purple-800'
+            };
+            return classes[level] || 'bg-gray-100 text-gray-800';
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function findCourseById(id) {
+            return courses.find(c => c.id == id);
+        }
+
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // تصفية الدورات حسب التصنيف
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    categoryButtons.forEach(b => {
+                        b.classList.remove('active');
+                        const bgColor = b.classList.contains('bg-blue-600') ? 'bg-blue-600' : 
+                                      b.classList.contains('bg-green-600') ? 'bg-green-600' :
+                                      b.classList.contains('bg-purple-600') ? 'bg-purple-600' :
+                                      'bg-yellow-600';
+                        b.classList.add(bgColor);
+                    });
+                    
+                    this.classList.remove('bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-yellow-600');
+                    this.classList.add('bg-gray-800', 'active');
+                    
+                    const category = this.dataset.category;
+                    filterCourses(category);
+                });
+            });
+
+            // البحث في الدورات
+            searchInput.addEventListener('input', function() {
+                searchCourses(this.value);
+            });
+
+            // تفويض الأحداث للبطاقات
+            coursesGrid.addEventListener('click', function(e) {
+                const target = e.target;
+                const button = target.closest('button');
+                if (!button) return;
+                
+                const courseId = button.dataset.id;
+                if (!courseId) return;
+                
+                const course = findCourseById(courseId);
+                if (!course) return;
+                
+                if (button.classList.contains('enroll-btn')) {
+                    course.enrolled = true;
+                    course.progress = 10;
+                    alert(`🎉 تم تسجيلك بنجاح في دورة "${course.title}"!\n\nيمكنك الآن البدء في التعلم.`);
+                    renderAllCourses();
+                    renderMyCourses();
+                }
+                
+                if (button.classList.contains('start-btn')) {
+                    toggleVideo(courseId, true);
+                }
+                
+                if (button.classList.contains('close-video-btn')) {
+                    toggleVideo(courseId, false);
+                }
+                
+                if (button.classList.contains('view-certificate-btn')) {
+                    showCertificate(course.title);
+                }
+            });
+
+            // تفويض الأحداث لقسم "دوراتي"
+            enrolledCoursesList.addEventListener('click', function(e) {
+                const target = e.target;
+                const button = target.closest('button');
+                if (!button) return;
+                
+                const courseId = button.dataset.id;
+                if (!courseId) return;
+                
+                const course = findCourseById(courseId);
+                if (!course) return;
+                
+                if (button.classList.contains('continue-btn')) {
+                    toggleVideo(courseId, true);
+                }
+                
+                if (button.classList.contains('show-video-btn')) {
+                    toggleVideo(courseId, true);
+                }
+                
+                if (button.classList.contains('complete-btn') && !course.completed) {
+                    course.completed = true;
+                    course.progress = 100;
+                    alert(`🎓 تهانينا! لقد أكملت دورة "${course.title}" بنجاح.\n\nسيتم إرسال شهادتك إلى بريدك الإلكتروني.`);
+                    renderAllCourses();
+                    renderMyCourses();
+                    setTimeout(() => showCertificate(course.title), 500);
+                }
+            });
+
+            // إغلاق نافذة الشهادة
+            closeModalBtn.addEventListener('click', function() {
+                certificateModal.querySelector('.scale-95').classList.add('scale-95');
+                setTimeout(() => {
+                    certificateModal.classList.add('hidden');
+                }, 300);
+            });
+            
+            // تحميل الشهادة
+            downloadCertificateBtn.addEventListener('click', function() {
+                alert('✅ تم تحميل شهادتك بنجاح!');
+                certificateModal.querySelector('.scale-95').classList.add('scale-95');
+                setTimeout(() => {
+                    certificateModal.classList.add('hidden');
+                }, 300);
+            });
+
+            // تبديل الوضع الداكن
+            toggleModeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('bg-gray-900');
+                document.body.classList.toggle('text-white');
+                
+                const isDark = document.body.classList.contains('bg-gray-900');
+                this.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                
+                // تحديث ألوان البطاقات
+                document.querySelectorAll('.course-card, #my-courses-section').forEach(el => {
+                    el.classList.toggle('bg-gray-800', isDark);
+                    el.classList.toggle('bg-white', !isDark);
+                    el.classList.toggle('text-gray-300', isDark);
+                    el.classList.toggle('text-gray-800', !isDark);
+                });
+            });
+        }
+
+        // تشغيل التطبيق
+        init();
+    </script>
+</body>
+</html>
