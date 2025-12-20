@@ -4,986 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skillzoy Academy - المنصة التعليمية العالمية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Cairo Arabic Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* ===== إعدادات عامة ===== */
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
         
-        :root {
-            --primary: #0f172a;
-            --primary-dark: #0a0f1c;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --light: #f8fafc;
-            --dark: #020617;
-            --text: #e2e8f0;
-            --text-light: #cbd5e1;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --glass-bg: rgba(30, 41, 59, 0.9);
-            --glass-border: rgba(55, 65, 81, 0.6);
-            --border-radius: 16px;
-            --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
         }
         
-        body {
-            background: var(--gradient);
-            color: var(--text);
-            min-height: 100vh;
-            direction: rtl;
-            overflow-x: hidden;
-            line-height: 1.7;
-        }
-        
-        /* ===== صفحة البداية ===== */
-        .start-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 40px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .start-page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop') center/cover;
-            opacity: 0.1;
-            z-index: -1;
-        }
-        
-        .logo-container {
-            margin-bottom: 40px;
-            position: relative;
-        }
-        
-        .logo {
-            font-size: 5rem;
-            color: var(--accent);
-            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .logo-text {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--accent), var(--accent-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-        
-        .tagline {
-            font-size: 1.5rem;
-            color: var(--text-light);
-            margin-bottom: 30px;
-            max-width: 600px;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 50px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 20px;
-            min-width: 150px;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: var(--text-light);
-            font-size: 1rem;
-        }
-        
-        .start-btn {
-            background: linear-gradient(45deg, var(--accent), #2563eb);
-            color: white;
-            border: none;
-            padding: 22px 60px;
-            font-size: 1.4rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .start-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .start-btn:hover::before {
-            left: 100%;
-        }
-        
-        .start-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.6);
-        }
-        
-        /* ===== صفحة الدورات ===== */
-        .courses-page {
-            display: none;
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-        
-        .page-header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding: 0 20px;
-        }
-        
-        .page-header h1 {
-            font-size: 3.2rem;
-            color: var(--light);
-            margin-bottom: 15px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .page-header h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            right: 50%;
-            transform: translateX(50%);
-            width: 100px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-        
-        .page-header p {
-            font-size: 1.3rem;
-            color: var(--text-light);
-            max-width: 800px;
-            margin: 25px auto 0;
-            line-height: 1.8;
-        }
-        
-        .courses-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 35px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
         }
         
         .course-card {
-            background: var(--glass-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            transition: all 0.3s ease;
         }
         
         .course-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-            border-color: var(--accent);
-        }
-        
-        .course-header {
-            padding: 30px 30px 20px;
-            position: relative;
-        }
-        
-        .course-category {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--accent);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .course-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--light);
-            margin-bottom: 15px;
-            line-height: 1.4;
-            min-height: 68px;
-        }
-        
-        .course-description {
-            color: var(--text-light);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .course-icon {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            background: rgba(59, 130, 246, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--accent);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .course-body {
-            padding: 0 30px 25px;
-            flex-grow: 1;
-        }
-        
-        .course-meta {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-        
-        .meta-item i {
-            color: var(--accent);
-            width: 20px;
-            text-align: center;
-        }
-        
-        .instructor {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .instructor-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--accent), var(--accent-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .instructor-info h4 {
-            color: var(--light);
-            margin-bottom: 3px;
-            font-size: 1rem;
-        }
-        
-        .instructor-info p {
-            color: var(--text-light);
-            font-size: 0.85rem;
-        }
-        
-        .course-footer {
-            padding: 20px 30px 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .select-btn {
-            background: linear-gradient(45deg, var(--accent), #2563eb);
-            color: white;
-            border: none;
-            padding: 16px 30px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            font-size: 1rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        
-        .select-btn:hover {
-            background: linear-gradient(45deg, #2563eb, #1d4ed8);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-        }
-        
-        /* ===== صفحة الفيديوهات ===== */
-        .playlist-page {
-            display: none;
-            min-height: 100vh;
-            background: var(--gradient);
-        }
-        
-        .playlist-header {
-            padding: 25px 40px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .playlist-title {
-            font-size: 2.2rem;
-            color: var(--light);
-            font-weight: 700;
-        }
-        
-        .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            border: 1px solid var(--glass-border);
-            padding: 12px 25px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-        }
-        
-        .back-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: var(--accent);
-            transform: translateX(-5px);
-        }
-        
-        .playlist-container {
-            display: grid;
-            grid-template-columns: 1fr 450px;
-            gap: 40px;
-            padding: 40px;
-            max-width: 1800px;
-            margin: 0 auto;
-            height: calc(100vh - 130px);
-        }
-        
-        @media (max-width: 1200px) {
-            .playlist-container {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-        }
-        
-        .main-video {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-        }
-        
-        .video-title-container {
-            padding: 25px 30px;
-            background: rgba(59, 130, 246, 0.15);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .current-video-title {
-            font-size: 1.5rem;
-            color: var(--light);
-            font-weight: 600;
-            line-height: 1.4;
-        }
-        
-        .video-meta {
-            display: flex;
-            gap: 20px;
-            margin-top: 10px;
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-        
-        .video-wrapper {
-            flex: 1;
-            position: relative;
-            padding-bottom: 56.25%;
-            overflow: hidden;
-        }
-        
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .videos-sidebar {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-        }
-        
-        .sidebar-header {
-            padding: 25px 30px;
-            background: rgba(59, 130, 246, 0.2);
-            border-bottom: 1px solid var(--glass-border);
-            text-align: center;
-        }
-        
-        .sidebar-header h3 {
-            font-size: 1.4rem;
-            color: var(--light);
-            margin-bottom: 8px;
-        }
-        
-        .videos-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .videos-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .videos-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-        }
-        
-        .videos-list::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
-        
-        .video-item {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .video-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent);
-            opacity: 0;
-            transition: opacity 0.3s;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
         .video-item:hover {
-            background: rgba(59, 130, 246, 0.15);
-            transform: translateX(-5px);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-        
-        .video-item:hover::before {
-            opacity: 1;
+            background: rgba(59, 130, 246, 0.1);
         }
         
         .video-item.active {
-            background: rgba(59, 130, 246, 0.25);
-            border-color: var(--accent);
-        }
-        
-        .video-item.active::before {
-            opacity: 1;
-        }
-        
-        .video-number {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
             background: rgba(59, 130, 246, 0.2);
-            border-radius: 50%;
-            margin-left: 15px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--accent);
-            flex-shrink: 0;
-            border: 2px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .video-item.active .video-number {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .video-info {
-            flex: 1;
-        }
-        
-        .video-info h4 {
-            font-size: 1.1rem;
-            color: var(--light);
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-        
-        .video-duration {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-        
-        /* ===== التنقل بين الصفحات ===== */
-        .page {
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        .page.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* ===== شريط التقدم ===== */
-        .progress-container {
-            padding: 0 40px;
-            margin-top: 20px;
+            border-color: #3b82f6;
         }
         
         .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-light));
-            width: 0%;
             transition: width 0.5s ease;
-            position: relative;
         }
         
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
-                transparent);
-            animation: shimmer 2s infinite;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
         
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            color: var(--text-light);
-            font-size: 0.9rem;
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
         
-        /* ===== أزرار التنقل السريع ===== */
-        .quick-nav {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .nav-btn {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: var(--glass-bg);
-            color: var(--text);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            cursor: pointer;
-            transition: var(--transition);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-btn:hover {
-            background: var(--accent);
-            color: white;
-            transform: scale(1.1) translateY(-5px);
-            border-color: var(--accent);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
-        }
-        
-        /* ===== تأثيرات متحركة ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-        
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
-        
-        /* ===== تخصيص شريط التمرير ===== */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
+        .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 5px;
+            border-radius: 3px;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 5px;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 3px;
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-light);
+        .hover-grow {
+            transition: transform 0.3s ease;
         }
         
-        /* ===== التجاوب ===== */
-        @media (max-width: 1200px) {
-            .courses-container {
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            }
-            
-            .playlist-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-                padding: 30px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .logo-text {
-                font-size: 2.5rem;
-            }
-            
-            .tagline {
-                font-size: 1.2rem;
-            }
-            
-            .courses-container {
-                grid-template-columns: 1fr;
-                padding: 0 15px;
-            }
-            
-            .page-header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .playlist-container {
-                padding: 20px;
-            }
-            
-            .playlist-header {
-                padding: 20px;
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .playlist-title {
-                font-size: 1.8rem;
-            }
-            
-            .stats {
-                gap: 20px;
-            }
-            
-            .stat-item {
-                min-width: 120px;
-                padding: 15px;
-            }
-            
-            .stat-number {
-                font-size: 2rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 4rem;
-            }
-            
-            .logo-text {
-                font-size: 2rem;
-            }
-            
-            .start-btn {
-                padding: 18px 40px;
-                font-size: 1.2rem;
-            }
-            
-            .course-card {
-                margin: 0 10px;
-            }
-            
-            .course-header,
-            .course-body,
-            .course-footer {
-                padding: 20px;
-            }
-            
-            .course-title {
-                font-size: 1.4rem;
-                min-height: auto;
-            }
+        .hover-grow:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
-<body>
-    <!-- ===== صفحة البداية ===== -->
-    <section id="start-page" class="page active">
-        <div class="start-page">
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <h1 class="logo-text fade-in-up">Skillzoy Academy</h1>
-                <p class="tagline fade-in-up delay-1">
-                    المنصة التعليمية العالمية - رحلة تعلم لا تنتهي من المبتدئ إلى المحترف
+<body class="bg-gray-900 text-white">
+    <!-- صفحة البداية -->
+    <div id="start-page" class="min-h-screen gradient-bg flex flex-col items-center justify-center px-4">
+        <div class="text-center max-w-4xl">
+            <!-- الشعار -->
+            <div class="mb-8">
+                <i class="fas fa-graduation-cap text-6xl text-blue-500 mb-4"></i>
+                <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
+                    Skillzoy Academy
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mt-4">
+                    المنصة التعليمية العالمية - رحلة تعلم من المبتدئ إلى المحترف
                 </p>
             </div>
             
-            <div class="stats fade-in-up delay-2">
-                <div class="stat-item">
-                    <div class="stat-number">10+</div>
-                    <div class="stat-label">دورة احترافية</div>
+            <!-- الإحصائيات -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <div class="text-3xl font-bold text-blue-500">10+</div>
+                    <div class="text-gray-400">دورة احترافية</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">250+</div>
-                    <div class="stat-label">فيديو تعليمي</div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <div class="text-3xl font-bold text-blue-500">250+</div>
+                    <div class="text-gray-400">فيديو تعليمي</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">5000+</div>
-                    <div class="stat-label">طالب مسجل</div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <div class="text-3xl font-bold text-blue-500">5000+</div>
+                    <div class="text-gray-400">طالب مسجل</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">دعم مباشر</div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <div class="text-3xl font-bold text-blue-500">24/7</div>
+                    <div class="text-gray-400">دعم مباشر</div>
                 </div>
             </div>
             
-            <button id="start-learning" class="start-btn fade-in-up delay-3">
+            <!-- زر البدء -->
+            <button id="start-learning" class="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white font-bold py-4 px-12 rounded-full text-xl transition-all duration-300 shadow-2xl hover:shadow-blue-500/30 flex items-center justify-center gap-3 hover-grow">
                 <span>ابدأ رحلة التعلم الآن</span>
                 <i class="fas fa-arrow-left"></i>
             </button>
-        </div>
-    </section>
-    
-    <!-- ===== صفحة الدورات ===== -->
-    <section id="courses-page" class="page">
-        <div class="courses-page">
-            <div class="page-header">
-                <h1>الدورات الاحترافية</h1>
-                <p>
-                    اختر من بين دوراتنا المتخصصة التي صممها خبراء في المجال لتأهيلك لسوق العمل 
-                    وتمكينك من تحقيق أهدافك المهنية
-                </p>
-            </div>
             
-            <div class="courses-container" id="courses-container">
-                <!-- سيتم ملؤها بالجافاسكريبت -->
+            <!-- مميزات المنصة -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-xl">
+                    <i class="fas fa-play-circle text-3xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">فيديوهات تعليمية</h3>
+                    <p class="text-gray-400">محتوى تعليمي عالي الجودة</p>
+                </div>
+                <div class="glass-card p-6 rounded-xl">
+                    <i class="fas fa-certificate text-3xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">شهادات معتمدة</h3>
+                    <p class="text-gray-400">شهادات بعد إتمام كل دورة</p>
+                </div>
+                <div class="glass-card p-6 rounded-xl">
+                    <i class="fas fa-chart-line text-3xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">تتبع التقدم</h3>
+                    <p class="text-gray-400">تابع تقدمك في التعلم</p>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
     
-    <!-- ===== صفحة الفيديوهات ===== -->
-    <section id="playlist-page" class="page">
-        <div class="playlist-page">
-            <div class="playlist-header">
-                <h1 class="playlist-title" id="playlist-title">دورة تطوير الويب المتقدمة</h1>
-                <button class="back-btn" id="back-to-courses">
-                    <i class="fas fa-arrow-right"></i>
-                    العودة للدورات
+    <!-- صفحة الدورات -->
+    <div id="courses-page" class="min-h-screen bg-gray-900 hidden px-4 py-12">
+        <div class="max-w-7xl mx-auto">
+            <!-- شريط التنقل -->
+            <div class="flex justify-between items-center mb-12">
+                <div>
+                    <h1 class="text-4xl font-bold">الدورات الاحترافية</h1>
+                    <p class="text-gray-400 mt-2">اختر الدورة المناسبة لك وابدأ التعلم</p>
+                </div>
+                <button id="back-to-home" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-full transition-all duration-300 flex items-center gap-2">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
                 </button>
             </div>
             
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="course-progress"></div>
+            <!-- شبكة الدورات -->
+            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- صفحة الفيديوهات -->
+    <div id="playlist-page" class="min-h-screen bg-gray-900 hidden">
+        <!-- الهيدر -->
+        <div class="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div>
+                    <h1 id="playlist-title" class="text-2xl font-bold">دورة تطوير الويب المتقدمة</h1>
+                    <div class="flex items-center gap-4 mt-2 text-gray-400">
+                        <span><i class="fas fa-play-circle"></i> <span id="video-count">0</span> فيديو</span>
+                        <span id="current-video-info">الفيديو 1</span>
+                    </div>
                 </div>
-                <div class="progress-text">
-                    <span id="current-video">الفيديو 1</span>
-                    <span id="total-videos">من 12</span>
+                <button id="back-to-courses" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-full transition-all duration-300 flex items-center gap-2">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>العودة للدورات</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- شريط التقدم -->
+        <div class="bg-gray-800/30 px-6 py-3">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between text-sm text-gray-400 mb-2">
+                    <span id="progress-text">0% مكتمل</span>
+                    <span id="video-progress">0/0</span>
+                </div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 progress-bar" style="width: 0%"></div>
                 </div>
             </div>
-            
-            <div class="playlist-container">
-                <div class="main-video">
-                    <div class="video-title-container">
-                        <div class="current-video-title" id="current-video-title">
+        </div>
+        
+        <!-- المحتوى الرئيسي -->
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- مشغل الفيديو -->
+                <div class="lg:w-2/3">
+                    <div class="bg-black rounded-2xl overflow-hidden shadow-2xl">
+                        <div id="video-title" class="bg-gray-800 p-4 text-lg font-bold">
                             اختر فيديو للبدء في التعلم
                         </div>
-                        <div class="video-meta">
-                            <span><i class="fas fa-clock"></i> <span id="video-duration">--:--</span></span>
-                            <span><i class="fas fa-play-circle"></i> <span id="video-index">0/0</span></span>
+                        <div class="aspect-w-16 aspect-h-9">
+                            <iframe 
+                                id="main-video-player"
+                                class="w-full h-full"
+                                src=""
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
                         </div>
-                    </div>
-                    <div class="video-wrapper">
-                        <iframe 
-                            id="main-video-player"
-                            src=""
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
                     </div>
                 </div>
                 
-                <div class="videos-sidebar">
-                    <div class="sidebar-header">
-                        <h3 id="sidebar-title">قائمة الفيديوهات</h3>
-                        <p id="video-count">0 فيديو</p>
-                    </div>
-                    
-                    <div class="videos-list" id="videos-list">
-                        <!-- سيتم ملؤها بالجافاسكريبت -->
-                        <div class="video-item">
-                            <div class="video-number">1</div>
-                            <div class="video-info">
-                                <h4>جارٍ تحميل قائمة الفيديوهات...</h4>
-                                <div class="video-duration">
-                                    <i class="far fa-clock"></i> --:--
-                                </div>
+                <!-- قائمة الفيديوهات -->
+                <div class="lg:w-1/3">
+                    <div class="glass-card rounded-2xl overflow-hidden h-[600px] flex flex-col">
+                        <div class="bg-gray-800 p-4">
+                            <h3 class="text-xl font-bold" id="sidebar-title">قائمة الفيديوهات</h3>
+                            <p class="text-gray-400 text-sm mt-1" id="course-description"></p>
+                        </div>
+                        <div id="videos-list" class="flex-1 overflow-y-auto custom-scrollbar p-4">
+                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+                                <p>جاري تحميل قائمة الفيديوهات...</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    
-    <!-- ===== أزرار التنقل السريع ===== -->
-    <div class="quick-nav">
-        <button class="nav-btn" id="nav-home" title="الصفحة الرئيسية">
-            <i class="fas fa-home"></i>
-        </button>
-        <button class="nav-btn" id="nav-courses" title="جميع الدورات">
-            <i class="fas fa-book"></i>
-        </button>
-        <button class="nav-btn" id="nav-current" title="الدورة الحالية" style="display: none;">
-            <i class="fas fa-play-circle"></i>
-        </button>
     </div>
 
     <script>
         // ===== بيانات الدورات (10 دورات) =====
-        const courses = {
-            // دورة تطوير الويب
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+        const courses = [
+            {
                 id: 1,
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
                 title: "دورة تطوير الويب المتقدمة",
                 category: "تطوير الويب",
                 instructor: "أحمد محمد",
@@ -991,156 +251,143 @@
                 level: "متقدم",
                 students: 1250,
                 description: "تعلم تطوير تطبيقات الويب الحديثة باستخدام أحدث التقنيات والأطر البرمجية",
+                icon: "fas fa-laptop-code",
                 videos: [
                     {title: "مقدمة في تطوير الويب المتقدم", duration: "18:30"},
-                    {title: "إعداد بيئة التطوير الاحترافية", duration: "22:15"},
-                    {title: "HTML5 المتقدم و Semantic Tags", duration: "25:40"},
-                    {title: "CSS3 المتقدم و Animations", duration: "32:10"},
-                    {title: "جافاسكريبت ES6+ الميزات الجديدة", duration: "28:55"},
-                    {title: "أطر عمل جافاسكريبت (React)", duration: "35:20"},
-                    {title: "أطر عمل جافاسكريبت (Vue.js)", duration: "29:45"},
-                    {title: "Node.js وبناء الخوادم", duration: "40:15"},
-                    {title: "قواعد البيانات مع MongoDB", duration: "33:30"},
-                    {title: "توثيق المستخدمين والأمان", duration: "26:50"},
-                    {title: "نشر التطبيقات على السحابة", duration: "24:25"},
-                    {title: "تحسين أداء التطبيقات", duration: "31:10"}
+                    {title: "إعداد بيئة التطوير", duration: "22:15"},
+                    {title: "HTML5 المتقدم", duration: "25:40"},
+                    {title: "CSS3 المتقدم", duration: "32:10"},
+                    {title: "جافاسكريبت ES6+", duration: "28:55"},
+                    {title: "React.js أساسيات", duration: "35:20"},
+                    {title: "Vue.js أساسيات", duration: "29:45"},
+                    {title: "Node.js للمبتدئين", duration: "40:15"},
+                    {title: "قواعد البيانات", duration: "33:30"},
+                    {title: "نشر التطبيقات", duration: "24:25"}
                 ]
             },
-            
-            // دورة تطوير تطبيقات الهاتف
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 2,
-                title: "تطوير تطبيقات الهاتف المحمول",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "تطوير تطبيقات الهاتف",
                 category: "تطوير التطبيقات",
                 instructor: "سارة علي",
                 duration: "28 ساعة",
                 level: "متوسط",
                 students: 890,
-                description: "احترف بناء تطبيقات الهواتف الذكية لنظامي Android و iOS",
+                description: "احترف بناء تطبيقات الهواتف الذكية",
+                icon: "fas fa-mobile-alt",
                 videos: [
                     {title: "مقدمة في تطوير التطبيقات", duration: "15:20"},
                     {title: "أنظمة تشغيل الهواتف", duration: "19:35"},
-                    {title: "تعلم أساسيات Flutter", duration: "27:50"},
-                    {title: "واجهة المستخدم في Flutter", duration: "34:15"},
-                    {title: "التعامل مع APIs في التطبيقات", duration: "29:40"},
-                    {title: "تخزين البيانات محلياً", duration: "22:25"},
-                    {title: "إشعارات Push Notifications", duration: "18:50"},
-                    {title: "تطوير تطبيقات iOS", duration: "36:30"},
-                    {title: "تطوير تطبيقات Android", duration: "38:45"},
-                    {title: "اختبار التطبيقات وإطلاقها", duration: "25:20"}
+                    {title: "أساسيات Flutter", duration: "27:50"},
+                    {title: "واجهة المستخدم", duration: "34:15"},
+                    {title: "التعامل مع APIs", duration: "29:40"},
+                    {title: "تخزين البيانات", duration: "22:25"},
+                    {title: "الإشعارات", duration: "18:50"},
+                    {title: "تطبيقات iOS", duration: "36:30"},
+                    {title: "تطبيقات Android", duration: "38:45"}
                 ]
             },
-            
-            // دورة قواعد البيانات
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 3,
-                title: "إدارة قواعد البيانات الاحترافية",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "قواعد البيانات الاحترافية",
                 category: "قواعد البيانات",
                 instructor: "محمد خالد",
                 duration: "32 ساعة",
                 level: "متوسط",
                 students: 1100,
-                description: "تعلم تصميم وإدارة قواعد البيانات العلائقية وغير العلائقية",
+                description: "تعلم تصميم وإدارة قواعد البيانات",
+                icon: "fas fa-database",
                 videos: [
                     {title: "مقدمة في قواعد البيانات", duration: "16:45"},
                     {title: "أنواع قواعد البيانات", duration: "21:30"},
-                    {title: "تصميم قواعد البيانات العلائقية", duration: "28:15"},
+                    {title: "تصميم قواعد البيانات", duration: "28:15"},
                     {title: "لغة SQL الأساسية", duration: "32:40"},
                     {title: "لغة SQL المتقدمة", duration: "35:55"},
-                    {title: "قواعد البيانات مع MySQL", duration: "29:20"},
-                    {title: "قواعد البيانات مع PostgreSQL", duration: "26:45"},
-                    {title: "قواعد البيانات NoSQL", duration: "24:30"},
-                    {title: "قواعد بيانات MongoDB", duration: "31:15"},
-                    {title: "أداء وتحسين قواعد البيانات", duration: "27:50"},
-                    {title: "نسخ احتياطي واستعادة البيانات", duration: "19:25"},
-                    {title: "أمن قواعد البيانات", duration: "23:40"}
+                    {title: "MySQL أساسيات", duration: "29:20"},
+                    {title: "PostgreSQL أساسيات", duration: "26:45"},
+                    {title: "قواعد NoSQL", duration: "24:30"},
+                    {title: "MongoDB أساسيات", duration: "31:15"}
                 ]
             },
-            
-            // دورة الذكاء الاصطناعي
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 4,
-                title: "الذكاء الاصطناعي وتعلم الآلة",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "الذكاء الاصطناعي",
                 category: "الذكاء الاصطناعي",
                 instructor: "ليلى أحمد",
                 duration: "45 ساعة",
                 level: "متقدم",
                 students: 750,
-                description: "تعلم أساسيات الذكاء الاصطناعي وتعلم الآلة باستخدام Python",
+                description: "تعلم أساسيات الذكاء الاصطناعي",
+                icon: "fas fa-robot",
                 videos: [
                     {title: "مقدمة في الذكاء الاصطناعي", duration: "20:15"},
-                    {title: "أساسيات Python للذكاء الاصطناعي", duration: "25:30"},
+                    {title: "Python للذكاء الاصطناعي", duration: "25:30"},
                     {title: "مكتبات الذكاء الاصطناعي", duration: "28:45"},
                     {title: "تعلم الآلة - الأساسيات", duration: "32:10"},
                     {title: "خوارزميات التعلم الآلي", duration: "35:25"},
-                    {title: "معالجة البيانات للذكاء الاصطناعي", duration: "29:40"},
+                    {title: "معالجة البيانات", duration: "29:40"},
                     {title: "الشبكات العصبية", duration: "38:15"},
-                    {title: "التعلم العميق", duration: "40:30"},
-                    {title: "معالجة اللغة الطبيعية", duration: "33:45"},
-                    {title: "الرؤية الحاسوبية", duration: "36:20"},
-                    {title: "بناء نماذج الذكاء الاصطناعي", duration: "42:10"},
-                    {title: "نشر نماذج الذكاء الاصطناعي", duration: "30:25"}
+                    {title: "التعلم العميق", duration: "40:30"}
                 ]
             },
-            
-            // دورة التسويق الرقمي
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 5,
-                title: "التسويق الرقمي المتقدم",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "التسويق الرقمي",
                 category: "التسويق",
                 instructor: "نورا سعيد",
                 duration: "30 ساعة",
                 level: "متوسط",
                 students: 1350,
-                description: "تعلم استراتيجيات التسويق الرقمي وإدارة المحتوى",
+                description: "تعلم استراتيجيات التسويق الرقمي",
+                icon: "fas fa-bullhorn",
                 videos: [
                     {title: "مقدمة في التسويق الرقمي", duration: "18:20"},
-                    {title: "استراتيجيات التسويق الإلكتروني", duration: "22:35"},
-                    {title: "تحليل السوق والمنافسين", duration: "25:50"},
-                    {title: "التسويق عبر وسائل التواصل", duration: "28:15"},
-                    {title: "تحسين محركات البحث SEO", duration: "31:40"},
+                    {title: "استراتيجيات التسويق", duration: "22:35"},
+                    {title: "تحليل السوق", duration: "25:50"},
+                    {title: "التسويق عبر التواصل", duration: "28:15"},
+                    {title: "تحسين محركات البحث", duration: "31:40"},
                     {title: "التسويق بالمحتوى", duration: "26:25"},
                     {title: "الإعلانات الرقمية", duration: "29:30"},
-                    {title: "تحليل بيانات التسويق", duration: "24:45"},
-                    {title: "التسويق عبر البريد الإلكتروني", duration: "27:10"},
-                    {title: "قياس عائد الاستثمار ROI", duration: "32:55"}
+                    {title: "تحليل البيانات", duration: "24:45"}
                 ]
             },
-            
-            // دورة التصميم الجرافيكي
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 6,
-                title: "التصميم الجرافيكي الاحترافي",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "التصميم الجرافيكي",
                 category: "التصميم",
                 instructor: "ياسر عمر",
                 duration: "25 ساعة",
                 level: "مبتدئ",
                 students: 2100,
-                description: "تعلم أساسيات التصميم الجرافيكي باستخدام Adobe Photoshop",
+                description: "تعلم أساسيات التصميم الجرافيكي",
+                icon: "fas fa-palette",
                 videos: [
-                    {title: "مقدمة في التصميم الجرافيكي", duration: "16:30"},
-                    {title: "واجهة Adobe Photoshop", duration: "20:45"},
-                    {title: "أدوات التحديد والقص", duration: "23:10"},
-                    {title: "طبقات Layers الأساسية", duration: "25:35"},
+                    {title: "مقدمة في التصميم", duration: "16:30"},
+                    {title: "واجهة Photoshop", duration: "20:45"},
+                    {title: "أدوات التحديد", duration: "23:10"},
+                    {title: "طبقات Layers", duration: "25:35"},
                     {title: "التعديل على الصور", duration: "28:50"},
                     {title: "النصوص والطباعة", duration: "22:15"},
-                    {title: "التأثيرات والمرشحات", duration: "26:40"},
-                    {title: "تصميم الشعارات", duration: "30:25"},
-                    {title: "تصميم بطاقات العمل", duration: "24:50"},
-                    {title: "تصميم البنرات الإعلانية", duration: "27:15"}
+                    {title: "التأثيرات", duration: "26:40"},
+                    {title: "تصميم الشعارات", duration: "30:25"}
                 ]
             },
-            
-            // دورة إدارة المشاريع
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 7,
-                title: "إدارة المشاريع الاحترافية PMP",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "إدارة المشاريع PMP",
                 category: "الإدارة",
                 instructor: "خالد راشد",
                 duration: "40 ساعة",
                 level: "متقدم",
                 students: 950,
-                description: "تعلم إدارة المشاريع باحترافية باستخدام منهجيات PMP و Agile",
+                description: "تعلم إدارة المشاريع باحترافية",
+                icon: "fas fa-briefcase",
                 videos: [
                     {title: "مقدمة في إدارة المشاريع", duration: "19:45"},
                     {title: "أساسيات منهجية PMP", duration: "24:30"},
@@ -1149,95 +396,80 @@
                     {title: "إدارة الجدول الزمني", duration: "34:45"},
                     {title: "إدارة التكلفة", duration: "29:10"},
                     {title: "إدارة الجودة", duration: "32:35"},
-                    {title: "إدارة الموارد البشرية", duration: "36:50"},
-                    {title: "إدارة الاتصالات", duration: "28:25"},
-                    {title: "إدارة المخاطر", duration: "33:40"},
-                    {title: "منهجية Agile", duration: "37:15"},
-                    {title: "التسليم والختام", duration: "30:50"}
+                    {title: "إدارة الموارد", duration: "36:50"}
                 ]
             },
-            
-            // دورة الأمن السيبراني
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 8,
-                title: "الأمن السيبراني والحماية",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "الأمن السيبراني",
                 category: "الأمن",
                 instructor: "عمر حسن",
                 duration: "38 ساعة",
                 level: "متقدم",
                 students: 680,
-                description: "تعلم أساسيات الأمن السيبراني وحماية الأنظمة والشبكات",
+                description: "تعلم أساسيات الأمن السيبراني",
+                icon: "fas fa-shield-alt",
                 videos: [
                     {title: "مقدمة في الأمن السيبراني", duration: "21:30"},
-                    {title: "تهديدات الأمن السيبراني", duration: "25:45"},
+                    {title: "تهديدات الأمن", duration: "25:45"},
                     {title: "حماية الشبكات", duration: "29:10"},
                     {title: "أمن التطبيقات", duration: "32:35"},
-                    {title: "التشفير والتحقق", duration: "35:50"},
-                    {title: "إدارة الهوية والوصول", duration: "30:15"},
+                    {title: "التشفير", duration: "35:50"},
+                    {title: "إدارة الهوية", duration: "30:15"},
                     {title: "الكشف عن التسلل", duration: "33:40"},
-                    {title: "الاستجابة للحوادث", duration: "37:05"},
-                    {title: "اختبار الاختراق", duration: "28:30"},
-                    {title: "الأمن في السحابة", duration: "31:55"},
-                    {title: "الامتثال والمعايير", duration: "34:20"},
-                    {title: "الوعي الأمني", duration: "29:45"}
+                    {title: "الاستجابة للحوادث", duration: "37:05"}
                 ]
             },
-            
-            // دورة تحليل البيانات
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 9,
-                title: "تحليل البيانات باستخدام Python",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "تحليل البيانات",
                 category: "البيانات",
                 instructor: "فاطمة عبدالله",
                 duration: "33 ساعة",
                 level: "متوسط",
                 students: 1120,
-                description: "تعلم تحليل البيانات واستخراج الرؤى باستخدام Python",
+                description: "تعلم تحليل البيانات باستخدام Python",
+                icon: "fas fa-chart-bar",
                 videos: [
                     {title: "مقدمة في تحليل البيانات", duration: "17:40"},
-                    {title: "أساسيات Python للبيانات", duration: "22:55"},
+                    {title: "أساسيات Python", duration: "22:55"},
                     {title: "مكتبات تحليل البيانات", duration: "26:20"},
                     {title: "تنظيف البيانات", duration: "29:45"},
                     {title: "التحليل الإحصائي", duration: "33:10"},
-                    {title: "التصور البياني للبيانات", duration: "36:35"},
+                    {title: "التصور البياني", duration: "36:35"},
                     {title: "تحليل السلاسل الزمنية", duration: "31:00"},
-                    {title: "التعلم الآلي للبيانات", duration: "34:25"},
-                    {title: "قواعد البيانات للتحليل", duration: "27:50"},
-                    {title: "تقارير وعروض البيانات", duration: "30:15"},
-                    {title: "مشروع تحليل بيانات حقيقي", duration: "38:40"}
+                    {title: "التعلم الآلي", duration: "34:25"}
                 ]
             },
-            
-            // دورة التجارة الإلكترونية
-            "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA": {
+            {
                 id: 10,
-                title: "التجارة الإلكترونية والتسويق",
+                playlist: "PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA",
+                title: "التجارة الإلكترونية",
                 category: "التجارة",
                 instructor: "ريم عبدالرحمن",
                 duration: "27 ساعة",
                 level: "مبتدئ",
                 students: 1850,
-                description: "تعلم إنشاء متاجر إلكترونية وتسويق المنتجات عبر الإنترنت",
+                description: "تعلم إنشاء متاجر إلكترونية",
+                icon: "fas fa-shopping-cart",
                 videos: [
                     {title: "مقدمة في التجارة الإلكترونية", duration: "15:25"},
-                    {title: "أنواع المتاجر الإلكترونية", duration: "19:40"},
+                    {title: "أنواع المتاجر", duration: "19:40"},
                     {title: "إنشاء متجر إلكتروني", duration: "23:05"},
-                    {title: "إدارة المنتجات والمخزون", duration: "26:30"},
-                    {title: "أنظمة الدفع الإلكتروني", duration: "29:55"},
+                    {title: "إدارة المنتجات", duration: "26:30"},
+                    {title: "أنظمة الدفع", duration: "29:55"},
                     {title: "الشحن والتوصيل", duration: "33:20"},
-                    {title: "تسويق المتاجر الإلكترونية", duration: "27:45"},
-                    {title: "تحسين تجربة المستخدم", duration: "31:10"},
-                    {title: "تحليل أداء المتجر", duration: "34:35"},
-                    {title: "التوسع والنمو", duration: "28:00"}
+                    {title: "تسويق المتاجر", duration: "27:45"},
+                    {title: "تحليل الأداء", duration: "31:10"}
                 ]
             }
-        };
+        ];
         
         // ===== حالة التطبيق =====
-        let currentPage = 'start-page';
-        let currentPlaylist = '';
-        let currentVideoIndex = 1;
-        let currentCourseTitle = '';
+        let currentCourse = null;
+        let currentVideoIndex = 0;
         
         // ===== عناصر DOM =====
         const startPage = document.getElementById('start-page');
@@ -1245,305 +477,235 @@
         const playlistPage = document.getElementById('playlist-page');
         
         const startBtn = document.getElementById('start-learning');
-        const backToCoursesBtn = document.getElementById('back-to-courses');
+        const backToHome = document.getElementById('back-to-home');
+        const backToCourses = document.getElementById('back-to-courses');
         
+        const coursesContainer = document.getElementById('courses-container');
+        const videosList = document.getElementById('videos-list');
         const mainVideoPlayer = document.getElementById('main-video-player');
-        const currentVideoTitle = document.getElementById('current-video-title');
+        const videoTitle = document.getElementById('video-title');
         const playlistTitle = document.getElementById('playlist-title');
         const sidebarTitle = document.getElementById('sidebar-title');
-        const videosList = document.getElementById('videos-list');
+        const courseDescription = document.getElementById('course-description');
         const videoCount = document.getElementById('video-count');
-        const courseProgress = document.getElementById('course-progress');
-        const currentVideo = document.getElementById('current-video');
-        const totalVideos = document.getElementById('total-videos');
-        const videoDuration = document.getElementById('video-duration');
-        const videoIndex = document.getElementById('video-index');
-        
-        // أزرار التنقل السريع
-        const navHome = document.getElementById('nav-home');
-        const navCourses = document.getElementById('nav-courses');
-        const navCurrent = document.getElementById('nav-current');
+        const currentVideoInfo = document.getElementById('current-video-info');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const videoProgress = document.getElementById('video-progress');
         
         // ===== وظائف العرض =====
         // عرض صفحة الدورات
         function renderCoursesPage() {
-            const coursesContainer = document.getElementById('courses-container');
             coursesContainer.innerHTML = '';
             
-            let coursesHTML = '';
-            let delay = 0;
-            
-            Object.values(courses).forEach(course => {
-                const icon = getCourseIcon(course.category);
+            courses.forEach((course, index) => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card glass-card rounded-2xl overflow-hidden fade-in';
+                courseCard.style.animationDelay = `${index * 0.1}s`;
                 
-                coursesHTML += `
-                <div class="course-card fade-in-up" style="animation-delay: ${delay}s">
-                    <div class="course-header">
-                        <span class="course-category">${course.category}</span>
-                        <h3 class="course-title">${course.title}</h3>
-                        <p class="course-description">${course.description}</p>
-                        <div class="course-icon">${icon}</div>
-                    </div>
-                    
-                    <div class="course-body">
-                        <div class="course-meta">
-                            <div class="meta-item">
-                                <i class="far fa-clock"></i>
-                                <span>${course.duration}</span>
+                courseCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <span class="inline-block bg-blue-500/20 text-blue-400 text-sm font-bold px-3 py-1 rounded-full">
+                                    ${course.category}
+                                </span>
+                                <h3 class="text-xl font-bold mt-3">${course.title}</h3>
+                                <p class="text-gray-400 text-sm mt-2">${course.description}</p>
                             </div>
-                            <div class="meta-item">
-                                <i class="fas fa-signal"></i>
-                                <span>${course.level}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-user-graduate"></i>
-                                <span>${course.students.toLocaleString()} طالب</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="far fa-play-circle"></i>
-                                <span>${course.videos.length} فيديو</span>
+                            <div class="bg-blue-500/10 p-3 rounded-xl">
+                                <i class="${course.icon} text-2xl text-blue-500"></i>
                             </div>
                         </div>
                         
-                        <div class="instructor">
-                            <div class="instructor-avatar">
-                                ${course.instructor.split(' ')[0].charAt(0)}
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2 text-gray-400">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>${course.instructor}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-400">
+                                    <i class="fas fa-signal"></i>
+                                    <span>${course.level}</span>
+                                </div>
                             </div>
-                            <div class="instructor-info">
-                                <h4>${course.instructor}</h4>
-                                <p>مدرب معتمد</p>
+                            <div class="text-gray-400">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>${course.students.toLocaleString()}</span>
                             </div>
                         </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-blue-400">
+                                <i class="far fa-play-circle"></i>
+                                <span>${course.videos.length} فيديو</span>
+                            </div>
+                            <button class="select-course bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-full transition-all duration-300" 
+                                    data-course-id="${course.id}">
+                                ابدأ التعلم
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="course-footer">
-                        <button class="select-btn" 
-                                data-playlist="PLoAZ4MwyKDTiDvry_uXZlbM7TuM_Na4GA" 
-                                data-title="${course.title}"
-                                data-course-id="${course.id}">
-                            <i class="fas fa-play-circle"></i>
-                            ابدأ التعلم الآن
-                        </button>
-                    </div>
-                </div>
                 `;
                 
-                delay += 0.1;
+                coursesContainer.appendChild(courseCard);
             });
             
-            coursesContainer.innerHTML = coursesHTML;
-            setupCourseEventListeners();
+            // إضافة مستمعي الأحداث لأزرار الدورات
+            document.querySelectorAll('.select-course').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const courseId = parseInt(e.target.dataset.courseId);
+                    const course = courses.find(c => c.id === courseId);
+                    if (course) {
+                        loadCourse(course);
+                    }
+                });
+            });
         }
         
-        // الحصول على أيقونة الدورة
-        function getCourseIcon(category) {
-            const icons = {
-                'تطوير الويب': 'fas fa-laptop-code',
-                'تطوير التطبيقات': 'fas fa-mobile-alt',
-                'قواعد البيانات': 'fas fa-database',
-                'الذكاء الاصطناعي': 'fas fa-robot',
-                'التسويق': 'fas fa-bullhorn',
-                'التصميم': 'fas fa-palette',
-                'الإدارة': 'fas fa-briefcase',
-                'الأمن': 'fas fa-shield-alt',
-                'البيانات': 'fas fa-chart-bar',
-                'التجارة': 'fas fa-shopping-cart'
-            };
+        // تحميل دورة معينة
+        function loadCourse(course) {
+            currentCourse = course;
+            currentVideoIndex = 0;
             
-            return `<i class="${icons[category] || 'fas fa-book'}"></i>`;
-        }
-        
-        // تحميل قائمة التشغيل
-        function loadPlaylist(playlistId, courseTitle, courseId) {
-            currentPlaylist = playlistId;
-            currentCourseTitle = courseTitle;
-            currentVideoIndex = 1;
+            // تحديث المعلومات في الصفحة
+            playlistTitle.textContent = course.title;
+            sidebarTitle.textContent = course.title;
+            courseDescription.textContent = course.description;
+            videoCount.textContent = course.videos.length;
             
-            // تحديث العناوين
-            playlistTitle.textContent = courseTitle;
-            sidebarTitle.textContent = courseTitle;
+            // عرض قائمة الفيديوهات
+            renderVideosList();
             
-            // الحصول على بيانات الدورة
-            const course = Object.values(courses).find(c => c.id === courseId);
+            // تحميل أول فيديو
+            loadVideo(0);
             
-            // تحديث عدد الفيديوهات
-            const videoCountText = course.videos.length;
-            videoCount.textContent = `${videoCountText} فيديو`;
-            totalVideos.textContent = `من ${videoCountText}`;
-            
-            // تحديث شريط التقدم
-            updateProgressBar(1, videoCountText);
-            
-            // إنشاء قائمة الفيديوهات
-            renderVideosList(course);
-            
-            // تحميل الفيديو الأول
-            loadVideo(1, course);
-            
-            // الانتقال إلى صفحة قائمة التشغيل
-            goToPage('playlist');
+            // الانتقال لصفحة الفيديوهات
+            showPage('playlist');
         }
         
         // عرض قائمة الفيديوهات
-        function renderVideosList(course) {
+        function renderVideosList() {
             videosList.innerHTML = '';
-            const videos = course.videos;
             
-            videos.forEach((video, index) => {
-                const videoElement = document.createElement('div');
-                videoElement.className = 'video-item';
-                if (index === 0) videoElement.classList.add('active');
-                videoElement.dataset.videoIndex = index + 1;
+            currentCourse.videos.forEach((video, index) => {
+                const videoItem = document.createElement('div');
+                videoItem.className = `video-item p-4 rounded-xl mb-3 border border-gray-700 cursor-pointer transition-all duration-300 ${index === 0 ? 'active' : ''}`;
+                videoItem.dataset.videoIndex = index;
                 
-                videoElement.innerHTML = `
-                    <div class="video-number">${index + 1}</div>
-                    <div class="video-info">
-                        <h4>${video.title}</h4>
-                        <div class="video-duration">
-                            <i class="far fa-clock"></i> ${video.duration}
+                videoItem.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                            <span class="text-blue-400 font-bold">${index + 1}</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-medium">${video.title}</h4>
+                            <div class="flex items-center gap-4 mt-2 text-sm text-gray-400">
+                                <span><i class="far fa-clock"></i> ${video.duration}</span>
+                                ${index === currentVideoIndex ? '<span class="text-blue-400"><i class="fas fa-play"></i> تشاهد الآن</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-play text-blue-500"></i>
                         </div>
                     </div>
                 `;
                 
-                videoElement.addEventListener('click', function() {
-                    loadVideo(index + 1, course);
+                videoItem.addEventListener('click', () => {
+                    loadVideo(index);
                 });
                 
-                videosList.appendChild(videoElement);
+                videosList.appendChild(videoItem);
             });
         }
         
         // تحميل فيديو معين
-        function loadVideo(videoIndex, course) {
-            currentVideoIndex = videoIndex;
+        function loadVideo(index) {
+            currentVideoIndex = index;
+            const video = currentCourse.videos[index];
             
-            // تحديث الفيديو النشط
-            document.querySelectorAll('.video-item').forEach(item => {
-                item.classList.remove('active');
+            // تحديث العنوان والمعلومات
+            videoTitle.textContent = video.title;
+            currentVideoInfo.textContent = `الفيديو ${index + 1}`;
+            
+            // تحديث رابط الفيديو
+            mainVideoPlayer.src = `https://www.youtube.com/embed/videoseries?list=${currentCourse.playlist}&index=${index + 1}&autoplay=1&rel=0&modestbranding=1`;
+            
+            // تحديث التقدم
+            updateProgress(index + 1, currentCourse.videos.length);
+            
+            // تحديث العنصر النشط في القائمة
+            document.querySelectorAll('.video-item').forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                    // إضافة مؤشر "تشاهد الآن"
+                    const watchingSpan = item.querySelector('.text-blue-400');
+                    if (watchingSpan) {
+                        watchingSpan.innerHTML = '<i class="fas fa-play"></i> تشاهد الآن';
+                    }
+                } else {
+                    item.classList.remove('active');
+                    // إزالة مؤشر "تشاهد الآن"
+                    const watchingSpan = item.querySelector('.text-blue-400');
+                    if (watchingSpan && !watchingSpan.textContent.includes('دقيقة')) {
+                        watchingSpan.innerHTML = '';
+                    }
+                }
             });
-            
-            const activeItem = document.querySelector(`.video-item[data-video-index="${videoIndex}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                
-                // تحديث عنوان الفيديو
-                const video = course.videos[videoIndex - 1];
-                currentVideoTitle.textContent = video.title;
-                videoDuration.textContent = video.duration;
-                
-                // تحديث الفهرس
-                currentVideo.textContent = `الفيديو ${videoIndex}`;
-                videoIndex.textContent = `${videoIndex}/${course.videos.length}`;
-                
-                // تحديث رابط الفيديو في الـ iframe
-                mainVideoPlayer.src = `https://www.youtube.com/embed/videoseries?list=${currentPlaylist}&index=${videoIndex}&autoplay=1&rel=0&modestbranding=1`;
-                
-                // التمرير إلى العنصر النشط
-                activeItem.scrollIntoView({behavior: 'smooth', block: 'center'});
-                
-                // تحديث شريط التقدم
-                updateProgressBar(videoIndex, course.videos.length);
-            }
         }
         
         // تحديث شريط التقدم
-        function updateProgressBar(current, total) {
+        function updateProgress(current, total) {
             const percentage = (current / total) * 100;
-            courseProgress.style.width = `${percentage}%`;
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${Math.round(percentage)}% مكتمل`;
+            videoProgress.textContent = `${current}/${total}`;
         }
         
-        // الانتقال بين الصفحات
-        function goToPage(pageName) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+        // تغيير الصفحة
+        function showPage(pageName) {
+            // إخفاء جميع الصفحات
+            startPage.classList.add('hidden');
+            coursesPage.classList.add('hidden');
+            playlistPage.classList.add('hidden');
             
-            const targetPage = document.getElementById(`${pageName}-page`);
-            setTimeout(() => {
-                targetPage.classList.add('active');
-            }, 50);
-            
-            // تحديث أزرار التنقل السريع
-            updateNavButtons(pageName);
-            
-            // تحديث الصفحة الحالية
-            currentPage = pageName;
-            
-            // إذا كانت صفحة الدورات، قم بعرضها
-            if (pageName === 'courses-page') {
+            // إظهار الصفحة المطلوبة
+            if (pageName === 'start') {
+                startPage.classList.remove('hidden');
+            } else if (pageName === 'courses') {
+                coursesPage.classList.remove('hidden');
                 renderCoursesPage();
-            }
-        }
-        
-        // تحديث أزرار التنقل السريع
-        function updateNavButtons(pageName) {
-            navHome.style.display = 'flex';
-            navCourses.style.display = 'flex';
-            navCurrent.style.display = 'none';
-            
-            if (pageName === 'playlist') {
-                navCurrent.style.display = 'flex';
+            } else if (pageName === 'playlist') {
+                playlistPage.classList.remove('hidden');
             }
         }
         
         // ===== إعداد مستمعي الأحداث =====
-        function setupCourseEventListeners() {
-            document.querySelectorAll('.select-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const playlistId = this.dataset.playlist;
-                    const courseTitle = this.dataset.title;
-                    const courseId = parseInt(this.dataset.courseId);
-                    loadPlaylist(playlistId, courseTitle, courseId);
-                });
-            });
-        }
-        
-        // ===== أحداث التنقل =====
         startBtn.addEventListener('click', () => {
-            goToPage('courses-page');
+            showPage('courses');
         });
         
-        backToCoursesBtn.addEventListener('click', () => {
-            goToPage('courses-page');
+        backToHome.addEventListener('click', () => {
+            showPage('start');
         });
         
-        navHome.addEventListener('click', () => {
-            goToPage('start-page');
-        });
-        
-        navCourses.addEventListener('click', () => {
-            goToPage('courses-page');
-        });
-        
-        navCurrent.addEventListener('click', () => {
-            if (currentPlaylist) {
-                goToPage('playlist');
-            }
+        backToCourses.addEventListener('click', () => {
+            showPage('courses');
         });
         
         // ===== تهيئة التطبيق =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // إضافة تأثيرات للبطاقات
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ تم تحميل المنصة بنجاح!');
+            console.log(`📚 عدد الدورات: ${courses.length}`);
+            console.log(`🎬 إجمالي الفيديوهات: ${courses.reduce((acc, course) => acc + course.videos.length, 0)}`);
+            
+            // إضافة تأثير fade-in للعناصر
             setTimeout(() => {
-                document.querySelectorAll('.course-card').forEach((card, index) => {
-                    card.style.animationDelay = `${index * 0.1}s`;
+                document.querySelectorAll('.fade-in').forEach((el, index) => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
                 });
             }, 100);
-            
-            // تعيين ترحيب حسب الوقت
-            const hour = new Date().getHours();
-            let greeting = "مرحباً بك";
-            
-            if (hour < 12) greeting = "صباح الخير";
-            else if (hour < 18) greeting = "مساء الخير";
-            else greeting = "مساء الخير";
-            
-            document.querySelector('.tagline').innerHTML = 
-                `${greeting} في منصة التعلم العالمية<br>رحلة تعلم لا تنتهي من المبتدئ إلى المحترف`;
-            
-            console.log('✅ تم تحميل 10 دورات بنجاح!');
-            console.log('🎓 إجمالي الدورات:', Object.keys(courses).length);
-            console.log('📊 إجمالي الفيديوهات:', Object.values(courses).reduce((acc, course) => acc + course.videos.length, 0));
         });
     </script>
 </body>
