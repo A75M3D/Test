@@ -3,62 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <title>Skillzoy Academy - منصة التعليم الالكتروني</title>
-   <meta http-equiv="Content-Security-Policy" 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- CSP مبسط ومتوافق مع يوتيوب فقط -->
+<meta http-equiv="Content-Security-Policy" 
       content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval'
-                   https://cdnjs.cloudflare.com 
-                   https://cdn.jsdelivr.net 
-                   https://apis.google.com 
-                   https://www.youtube.com 
-                   https://*.supabase.co 
-                   https://*.supabase.in;
-        style-src 'self' 'unsafe-inline'
-                  https://cdnjs.cloudflare.com 
-                  https://fonts.googleapis.com 
-                  https://*.supabase.co 
-                  https://cdn.jsdelivr.net;
-        font-src 'self' data:
-                 https://cdnjs.cloudflare.com 
-                 https://fonts.gstatic.com 
-                 https://fonts.googleapis.com 
-                 https://ka-f.fontawesome.com;
-        img-src 'self' data: https:
-                https://*.supabase.co 
-                https://i.ytimg.com 
-                https://img.youtube.com;
-        connect-src 'self' 
-                   https://*.supabase.co 
-                   https://*.supabase.in 
-                   https://www.googleapis.com 
-                   https://youtube.googleapis.com 
-                   wss://*.supabase.co 
-                   https://ka-f.fontawesome.com;
-        frame-src 'self' 
-                 https://www.youtube.com 
-                 https://youtube.com 
-                 https://*.youtube.com 
-                 https://*.supabase.co;
-        frame-ancestors 'none';
-        media-src 'self' 
-                  https://*.supabase.co 
-                  https://*.youtube.com;
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com;
+        img-src 'self' data: https://i.ytimg.com https://img.youtube.com;
+        connect-src 'self' https://www.googleapis.com https://youtube.googleapis.com;
+        frame-src https://www.youtube.com https://youtube.com https://*.youtube.com;
         object-src 'none';
         base-uri 'self';
-        form-action 'self' https://*.supabase.co;
+        form-action 'self';
         upgrade-insecure-requests;">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
-<meta name="referrer" content="strict-origin-when-cross-origin">   
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -66,7 +32,7 @@
 
 <!-- Header -->
 <header class="bg-gradient-to-l from-indigo-700 to-blue-700 text-white p-6 shadow">
-  <h1 class="text-2xl font-bold text-center">منصة التعلم الإلكتروني| Skillzoy academy</h1>
+  <h1 class="text-2xl font-bold text-center">منصة التعلم الإلكتروني | Skillzoy academy</h1>
   <p class="text-center text-sm opacity-90 mt-1">تعلم | سجّل | شاهد | احصل على شهادتك</p>
 </header>
 
@@ -87,14 +53,11 @@
     class="mb-4 text-indigo-600 font-semibold hover:underline transition">
     ← الرجوع إلى دوراتي
   </button>
-
   <h2 id="playerTitle" class="text-xl font-bold mb-4"></h2>
   <iframe id="playerFrame"
     class="w-full h-[420px] rounded-xl shadow"
     allowfullscreen></iframe>
 </section>
-
-</main>
 
 <!-- WhatsApp Button -->
 <a id="whatsappButton" href="https://wa.me/966500000000" target="_blank"
@@ -121,80 +84,20 @@ const courses = [
     id: "react",
     title: "React.js",
     desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
     playlist: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
   },
   {
     id: "excel",
     title: "Excel المتقدم",
     desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/0nbkaYsR94c",
     playlist: "https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
-  },
-    {
-    id: "react",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLhskvpzqIArT11XAyuKJc7ZhJPTV6uh_q"
-  },
-  {
-    id: "excel",
-    title: "Excel المتقدم",
-    desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/0nbkaYsR94c",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
-  },
-  {
-    id: "react",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
-  },
-  {
-    id: "excel",
-    title: "Excel المتقدم",
-    desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/0nbkaYsR94c",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
-  },
-    {
-    id: "react",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLhskvpzqIArT11XAyuKJc7ZhJPTV6uh_q"
-  },
-{
-    id: "react",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
-  },
-  {
-    id: "excel",
-    title: "Excel المتقدم",
-    desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/0nbkaYsR94c",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
-  },
-    {
-    id: "react",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLhskvpzqIArT11XAyuKJc7ZhJPTV6uh_q"
   },
   {
     id: "Ai",
     title: "Ai المتقدم",
     desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/_DltV81CGB1vxQF6",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLSLMEu6gRp1Zw-4GFG0dFLFX5q48ZYe_T&si=TrECcL8MUddGNEE5"
+    playlist: "https://www.youtube.com/embed/videoseries?list=PLSLMEu6gRp1Zw-4GFG0dFLFX5q48ZYe_T"
   }
-  // ✅ لإضافة دورة جديدة: أضف كائن جديد هنا
 ];
 
 let myCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
@@ -206,7 +109,7 @@ function renderHome() {
     const enrolled = myCourses.includes(c.id);
     homeSection.innerHTML += `
       <div class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
-        <iframe class="w-full h-52" src="${c.preview}" allowfullscreen></iframe>
+        <iframe class="w-full h-52" src="${c.playlist}" allowfullscreen></iframe>
         <div class="p-5">
           <h3 class="font-bold text-lg mb-1">${c.title}</h3>
           <p class="text-sm text-gray-600 mb-4">${c.desc}</p>
@@ -230,7 +133,7 @@ function handleCourse(id) {
   renderHome();
   renderMyCourses();
   showMyCourses();
-  showWhatsApp(); // إظهار زر واتساب بعد التسجيل
+  showWhatsApp();
 }
 
 /* ====== MY COURSES ====== */
