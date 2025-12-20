@@ -4,569 +4,352 @@
   <meta charset="UTF-8">
   <title>منصة التعلم الإلكتروني</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #1abc9c;
+      --light-color: #f8f9fa;
+      --dark-color: #2c3e50;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-
+    
     body {
+      margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
       color: #333;
       line-height: 1.6;
-      padding: 20px;
-      min-height: 100vh;
     }
-
-    .container {
+    
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: skewX(-20deg);
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .courses-container {
       max-width: 1200px;
       margin: 0 auto;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 20px;
-      background: linear-gradient(to right, #2c3e50, #4a6491);
-      color: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-    }
-
-    .courses-container {
+      padding: 30px 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       gap: 30px;
-      margin-bottom: 40px;
     }
-
+    
     .course-card {
       background: white;
-      border-radius: 15px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      flex-direction: column;
+      border-top: 5px solid var(--accent-color);
     }
-
+    
     .course-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
-
-    .course-header {
-      padding: 20px;
-      background: linear-gradient(to right, #3498db, #2ecc71);
+    
+    .course-title {
+      background: var(--primary-color);
       color: white;
-      text-align: center;
+      padding: 18px 20px;
+      margin: 0;
+      font-size: 1.5rem;
     }
-
-    .course-header h2 {
-      font-size: 1.8rem;
-      margin-bottom: 5px;
-    }
-
+    
     .video-wrapper {
-      padding: 15px;
-      flex-grow: 1;
+      padding: 0;
     }
-
+    
     iframe {
       width: 100%;
-      height: 250px;
-      border-radius: 10px;
+      height: 300px;
       border: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .progress-container {
-      padding: 15px 20px;
-      background: #f8f9fa;
-      border-top: 1px solid #eee;
-    }
-
-    .progress-bar {
-      height: 12px;
-      background: #e0e0e0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(to right, #2ecc71, #1abc9c);
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    .completion-message {
-      padding: 15px 20px;
-      background: #e8f5e9;
-      border-left: 5px solid #2ecc71;
-      margin-top: 15px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .completion-message.show {
       display: block;
-      animation: fadeIn 0.5s ease;
     }
-
-    .whatsapp-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    
+    .course-info {
+      padding: 20px;
+      background: white;
+    }
+    
+    .course-description {
+      color: #555;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    
+    .whatsapp-button {
+      position: fixed;
+      left: 25px;
+      bottom: 25px;
       background: #25D366;
       color: white;
-      text-decoration: none;
-      padding: 12px 25px;
-      border-radius: 50px;
-      font-weight: bold;
-      margin-top: 10px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-    }
-
-    .whatsapp-btn:hover {
-      background: #128C7E;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
-    }
-
-    .whatsapp-btn i {
-      margin-left: 8px;
-      font-size: 1.2rem;
-    }
-
-    .notification {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 400px;
-      z-index: 1000;
-      display: none;
-      animation: slideIn 0.5s ease;
-      border-left: 6px solid #3498db;
-    }
-
-    .notification.show {
-      display: block;
-    }
-
-    .notification h3 {
-      color: #2c3e50;
-      margin-bottom: 10px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      z-index: 1000;
     }
-
-    .notification h3 i {
-      color: #f39c12;
-      margin-left: 10px;
+    
+    .whatsapp-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
     }
-
-    .close-notification {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      color: #7f8c8d;
-      cursor: pointer;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    .stat-box {
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #3498db;
-      margin-bottom: 5px;
-    }
-
-    .stat-label {
-      color: #7f8c8d;
+    
+    .whatsapp-tooltip {
+      position: fixed;
+      left: 100px;
+      bottom: 30px;
+      background: var(--dark-color);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
       font-size: 0.9rem;
+      max-width: 250px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    
+    .whatsapp-button:hover + .whatsapp-tooltip {
+      opacity: 1;
+      transform: translateX(0);
     }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    
+    .whatsapp-tooltip::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 8px;
+      border-style: solid;
+      border-color: transparent transparent transparent var(--dark-color);
     }
-
+    
+    .certificate-notice {
+      background: #fff8e1;
+      border-right: 4px solid #ffc107;
+      padding: 15px;
+      margin: 25px auto;
+      max-width: 900px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .certificate-notice h3 {
+      color: var(--primary-color);
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .certificate-notice h3::before {
+      content: "🏆";
+    }
+    
+    footer {
+      background: var(--dark-color);
+      color: white;
+      text-align: center;
+      padding: 25px 20px;
+      margin-top: 50px;
+    }
+    
     @media (max-width: 768px) {
       .courses-container {
         grid-template-columns: 1fr;
+        padding: 20px 15px;
       }
       
-      .stats {
-        flex-direction: column;
-        gap: 20px;
+      h1 {
+        font-size: 1.8rem;
       }
       
-      .notification {
+      .whatsapp-button {
         left: 20px;
-        right: 20px;
         bottom: 20px;
-        max-width: calc(100% - 40px);
+        width: 55px;
+        height: 55px;
+        font-size: 28px;
+      }
+      
+      .whatsapp-tooltip {
+        left: 90px;
+        bottom: 25px;
+        max-width: 200px;
+        font-size: 0.85rem;
+      }
+      
+      iframe {
+        height: 250px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      header {
+        padding: 20px 15px;
+      }
+      
+      h1 {
+        font-size: 1.6rem;
+      }
+      
+      .course-title {
+        font-size: 1.3rem;
+        padding: 15px;
+      }
+      
+      .whatsapp-tooltip {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-graduation-cap"></i> منصة التعلم الإلكتروني</h1>
-      <p class="subtitle">طور مهاراتك وأكمل الدورات لتحصل على شهادات معتمدة</p>
-    </header>
 
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-number" id="total-courses">3</div>
-        <div class="stat-label">دورة متاحة</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="completed-courses">0</div>
-        <div class="stat-label">دورة مكتملة</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="total-videos">33</div>
-        <div class="stat-label">فيديو تعليمي</div>
-      </div>
+<header>
+  <h1>منصة التعلم الإلكتروني</h1>
+  <div class="subtitle">تطوير مهاراتك يبدأ من هنا</div>
+</header>
+
+<div class="certificate-notice">
+  <h3>معلومة هامة عن الشهادات</h3>
+  <p>بعد إكمالك لأي دورة من الدورات المتاحة، يمكنك التواصل مع خدمة العملاء عبر زر واتساب الموجود في أسفل الصفحة لاستلام شهادتك المعتمدة. الشهادة ستكون متاحة خلال 3-5 أيام عمل من تاريخ اكتمال الدورة.</p>
+</div>
+
+<div class="courses-container">
+  <div class="course-card">
+    <h2 class="course-title">React.Js - تطوير واجهات المستخدم</h2>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
     </div>
-
-    <div class="courses-container">
-      <!-- دورة React.js -->
-      <div class="course-card">
-        <div class="course-header">
-          <h2><i class="fab fa-react"></i> React.Js</h2>
-          <p>دورة تطوير واجهات المستخدم</p>
-        </div>
-        <div class="video-wrapper">
-          <iframe
-            src="https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-react"></div>
-          </div>
-          <div class="progress-text">
-            <span>التقدم: <span id="react-count">0</span>/11 فيديو</span>
-            <span id="react-percent">0%</span>
-          </div>
-          <div class="completion-message" id="react-completion">
-            <h3><i class="fas fa-trophy"></i> مبروك! أكملت الدورة</h3>
-            <p>للاستلام شهادتك، تواصل مع الإدارة عبر الواتساب:</p>
-            <a href="https://wa.me/966500000000?text=أريد%20استلام%20شهادة%20دورة%20React.js%20رقم%20تسجيلي%3A%20" 
-               target="_blank" class="whatsapp-btn">
-              <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- دورة Excel -->
-      <div class="course-card">
-        <div class="course-header">
-          <h2><i class="fas fa-file-excel"></i> Excel المتقدم</h2>
-          <p>دورة متقدمة في تحليل البيانات</p>
-        </div>
-        <div class="video-wrapper">
-          <iframe
-            src="https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-excel"></div>
-          </div>
-          <div class="progress-text">
-            <span>التقدم: <span id="excel-count">0</span>/11 فيديو</span>
-            <span id="excel-percent">0%</span>
-          </div>
-          <div class="completion-message" id="excel-completion">
-            <h3><i class="fas fa-trophy"></i> مبروك! أكملت الدورة</h3>
-            <p>للاستلام شهادتك، تواصل مع الإدارة عبر الواتساب:</p>
-            <a href="https://wa.me/966500000000?text=أريد%20استلام%20شهادة%20دورة%20Excel%20المتقدم%20رقم%20تسجيلي%3A%20" 
-               target="_blank" class="whatsapp-btn">
-              <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- دورة خدمة العملاء -->
-      <div class="course-card">
-        <div class="course-header">
-          <h2><i class="fas fa-headset"></i> خدمة العملاء</h2>
-          <p>دورة تطوير مهارات التواصل والخدمة</p>
-        </div>
-        <div class="video-wrapper">
-          <iframe
-            src="https://www.youtube.com/embed/videoseries?list=PLz8ax6_pdePGTvDEqXkfpp1s7jYXbuBrP"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-customer"></div>
-          </div>
-          <div class="progress-text">
-            <span>التقدم: <span id="customer-count">0</span>/11 فيديو</span>
-            <span id="customer-percent">0%</span>
-          </div>
-          <div class="completion-message" id="customer-completion">
-            <h3><i class="fas fa-trophy"></i> مبروك! أكملت الدورة</h3>
-            <p>للاستلام شهادتك، تواصل مع الإدارة عبر الواتساب:</p>
-            <a href="https://wa.me/966500000000?text=أريد%20استلام%20شهادة%20دورة%20خدمة%20العملاء%20رقم%20تسجيلي%3A%20" 
-               target="_blank" class="whatsapp-btn">
-              <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
-            </a>
-          </div>
-        </div>
-      </div>
+    <div class="course-info">
+      <p class="course-description">دورة متكاملة لتعلم مكتبة React.js لبناء تطبيقات ويب تفاعلية. تشمل أساسيات React، الـComponents، الـState، الـHooks، والتكامل مع واجهات برمجة التطبيقات.</p>
     </div>
   </div>
-
-  <!-- إشعار الإكمال -->
-  <div class="notification" id="completion-notification">
-    <button class="close-notification" onclick="closeNotification()">×</button>
-    <h3><i class="fas fa-certificate"></i> تهانينا على إكمال الدورة!</h3>
-    <p id="notification-text"></p>
-    <p>تواصل مع الإدارة عبر الواتساب لاستلام شهادتك المعتمدة.</p>
-    <p><strong>رقم الواتساب:</strong> 0500000000+</p>
-    <p><small>يرجى إرفاق الاسم الكامل ورقم التسجيل عند التواصل</small></p>
+  
+  <div class="course-card">
+    <h2 class="course-title">Excel المتقدم - تحليل البيانات</h2>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="course-info">
+      <p class="course-description">احترف استخدام برنامج Excel من خلال تعلم الصيغ المتقدمة، دوال البحث، الجداول المحورية، الماكرو، وأدوات تحليل البيانات الاحترافية.</p>
+    </div>
   </div>
+  
+  <div class="course-card">
+    <h2 class="course-title">خدمة العملاء - تميز في التعامل مع العملاء</h2>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/videoseries?list=PLz8ax6_pdePGTvDEqXkfpp1s7jYXbuBrP"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="course-info">
+      <p class="course-description">تعلم فنون خدمة العملاء وكسب رضاهم. هذه الدورة تغطي مهارات التواصل الفعال، حل المشكلات، إدارة الشكاوى، وبناء علاقات مستدامة مع العملاء.</p>
+    </div>
+  </div>
+</div>
 
-  <script>
-    // بيانات الدورات (عدد الفيديوهات في كل دورة)
-    const courses = {
-      'react': { videos: 11, watched: 0, elementId: 'react' },
-      'excel': { videos: 11, watched: 0, elementId: 'excel' },
-      'customer': { videos: 11, watched: 0, elementId: 'customer' }
-    };
+<a href="https://wa.me/966500000000" class="whatsapp-button" target="_blank" aria-label="تواصل معنا عبر واتساب">
+  <span style="font-size: 32px;">📱</span>
+</a>
 
-    // استعادة التقدم من LocalStorage
-    function loadProgress() {
-      const savedProgress = localStorage.getItem('courseProgress');
-      if (savedProgress) {
-        const progress = JSON.parse(savedProgress);
-        for (const courseId in progress) {
-          if (courses[courseId]) {
-            courses[courseId].watched = progress[courseId];
-            updateProgressDisplay(courseId);
-          }
-        }
-      }
-      updateStats();
-    }
+<div class="whatsapp-tooltip">
+  <strong>خدمة العملاء عبر واتساب</strong><br>
+  تواصل معنا بعد إكمال الدورة لاستلام شهادتك المعتمدة. نحن هنا للإجابة على استفساراتك من الساعة 9 صباحاً حتى 5 مساءً.
+</div>
 
-    // حفظ التقدم في LocalStorage
-    function saveProgress() {
-      const progress = {};
-      for (const courseId in courses) {
-        progress[courseId] = courses[courseId].watched;
-      }
-      localStorage.setItem('courseProgress', JSON.stringify(progress));
-      updateStats();
-    }
+<footer>
+  <p>© 2023 منصة التعلم الإلكتروني. جميع الحقوق محفوظة.</p>
+  <p>تواصل معنا: info@elearning-platform.com | هاتف: ٠١٢٣٤٥٦٧٨٩</p>
+</footer>
 
-    // تحديث عرض التقدم
-    function updateProgressDisplay(courseId) {
-      const course = courses[courseId];
-      const percent = Math.round((course.watched / course.videos) * 100);
+<script>
+  // إضافة تفاعل بسيط عند تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', function() {
+    // تأثير ظهور العناصر بالتتابع
+    const courseCards = document.querySelectorAll('.course-card');
+    courseCards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
       
-      // تحديث شريط التقدم
-      document.getElementById(`progress-${courseId}`).style.width = `${percent}%`;
-      
-      // تحديث الأرقام
-      document.getElementById(`${courseId}-count`).textContent = course.watched;
-      document.getElementById(`${courseId}-percent`).textContent = `${percent}%`;
-      
-      // التحقق من إكمال الدورة
-      if (course.watched === course.videos) {
-        document.getElementById(`${courseId}-completion`).classList.add('show');
-      } else {
-        document.getElementById(`${courseId}-completion`).classList.remove('show');
-      }
-    }
-
-    // تحديث الإحصائيات
-    function updateStats() {
-      let completedCourses = 0;
-      let totalWatchedVideos = 0;
-      
-      for (const courseId in courses) {
-        if (courses[courseId].watched === courses[courseId].videos) {
-          completedCourses++;
-        }
-        totalWatchedVideos += courses[courseId].watched;
-      }
-      
-      document.getElementById('completed-courses').textContent = completedCourses;
-    }
-
-    // زيادة عداد الفيديوهات المشاهدة
-    function incrementWatched(courseId) {
-      if (courses[courseId].watched < courses[courseId].videos) {
-        courses[courseId].watched++;
-        
-        // التحقق من الإكمال
-        if (courses[courseId].watched === courses[courseId].videos) {
-          showCompletionNotification(courseId);
-        }
-        
-        updateProgressDisplay(courseId);
-        saveProgress();
-      }
-    }
-
-    // عرض إشعار الإكمال
-    function showCompletionNotification(courseId) {
-      const courseNames = {
-        'react': 'React.js',
-        'excel': 'Excel المتقدم',
-        'customer': 'خدمة العملاء'
-      };
-      
-      document.getElementById('notification-text').textContent = 
-        `لقد أكملت بنجاح دورة "${courseNames[courseId]}".`;
-      
-      document.getElementById('completion-notification').classList.add('show');
-      
-      // إغلاق الإشعار تلقائياً بعد 30 ثانية
       setTimeout(() => {
-        closeNotification();
-      }, 30000);
-    }
-
-    // إغلاق الإشعار
-    function closeNotification() {
-      document.getElementById('completion-notification').classList.remove('show');
-    }
-
-    // محاكاة مشاهدة الفيديوهات (في الواقع الفعلي سيتم بواسطة YouTube API)
-    function simulateVideoWatching() {
-      // زر لإضافة فيديو مشاهد يدوياً (للتجربة)
-      document.addEventListener('click', function(e) {
-        if (e.target.closest('.course-header')) {
-          const card = e.target.closest('.course-card');
-          const header = card.querySelector('.course-header h2');
-          let courseId = '';
-          
-          if (header.textContent.includes('React')) courseId = 'react';
-          else if (header.textContent.includes('Excel')) courseId = 'excel';
-          else if (header.textContent.includes('خدمة')) courseId = 'customer';
-          
-          if (courseId && courses[courseId].watched < courses[courseId].videos) {
-            incrementWatched(courseId);
-            
-            // تأثير بصرية مؤقت
-            const progressFill = document.getElementById(`progress-${courseId}`);
-            progressFill.style.transition = 'none';
-            progressFill.style.backgroundColor = '#3498db';
-            setTimeout(() => {
-              progressFill.style.transition = 'width 0.5s ease';
-              progressFill.style.backgroundColor = '';
-            }, 300);
-          }
-        }
-      });
-      
-      // اختصارات لوحة المفاتيح (للتجربة)
-      document.addEventListener('keydown', function(e) {
-        if (e.altKey) {
-          switch(e.key) {
-            case '1': incrementWatched('react'); break;
-            case '2': incrementWatched('excel'); break;
-            case '3': incrementWatched('customer'); break;
-            case '0': 
-              // إعادة تعيين جميع الدورات
-              if (confirm('هل تريد إعادة تعيين تقدم جميع الدورات؟')) {
-                for (const courseId in courses) {
-                  courses[courseId].watched = 0;
-                  updateProgressDisplay(courseId);
-                }
-                saveProgress();
-              }
-              break;
-          }
-        }
-      });
-    }
-
-    // تهيئة الصفحة
-    window.addEventListener('DOMContentLoaded', function() {
-      loadProgress();
-      simulateVideoWatching();
-      
-      // معلومات للمستخدم
-      console.log('اختصارات لوحة المفاتيح للتجربة:');
-      console.log('Alt+1: إضافة فيديو لـ React');
-      console.log('Alt+2: إضافة فيديو لـ Excel');
-      console.log('Alt+3: إضافة فيديو لـ خدمة العملاء');
-      console.log('Alt+0: إعادة تعيين جميع الدورات');
-      console.log('انقر على عنوان أي دورة لإضافة فيديو مشاهد');
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 200 * index);
     });
+    
+    // إضافة نص توضيحي عند التمرير فوق زر واتساب
+    const whatsappBtn = document.querySelector('.whatsapp-button');
+    const tooltip = document.querySelector('.whatsapp-tooltip');
+    
+    whatsappBtn.addEventListener('mouseenter', () => {
+      tooltip.style.opacity = '1';
+      tooltip.style.transform = 'translateX(0)';
+    });
+    
+    whatsappBtn.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translateX(-20px)';
+    });
+  });
+</script>
 
-    // تغيير رقم الواتساب الحقيقي هنا
-    // جميع أرقام الواتساب في الروابط هي 0500000000+ (افتراضي)
-    // قم بتغييرها إلى الرقم الحقيقي في السطور التالية:
-    // 1. السطر 129 (لدورة React)
-    // 2. السطر 153 (لدورة Excel)
-    // 3. السطر 177 (لدورة خدمة العملاء)
-    // 4. السطر 230 (في الإشعار العائم)
-  </script>
 </body>
 </html>
