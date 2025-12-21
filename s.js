@@ -447,9 +447,7 @@ window.addEventListener('scroll', () => {
   
   lastScroll = currentScroll;
 });
-</script>
 
-<script>
 // =====Syber=====
     (() => {
       document.addEventListener("keydown", (e) => {
