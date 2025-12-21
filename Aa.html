@@ -2,211 +2,421 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>منصة تعليمية</title>
+<title>Skillzoy Academy - منصة التعليم الالكتروني</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- YouTube IFrame API Script -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-100 pb-32 text-gray-800 font-['Cairo']">
 
-<body class="bg-gray-100 pb-32 text-gray-800">
+<!-- إشعار الشهادة المؤقت -->
+<div id="certificateToast" class="fixed top-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-gradient-to-l from-green-500 to-emerald-600 text-white p-4 rounded-xl shadow-2xl z-50 flex items-center justify-between animate-slideInDown">
+    <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-sm font-medium">تواصل على واتساب للحصول على شهادتك بعد إكمال الدورة</p>
+    </div>
+    <button onclick="closeToast()" class="text-white hover:text-gray-200 transition flex-shrink-0">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+    </button>
+</div>
 
-<!-- Header -->
 <header class="bg-gradient-to-l from-indigo-700 to-blue-700 text-white p-6 shadow">
-  <h1 class="text-2xl font-bold text-center">منصة التعلم الإلكتروني</h1>
-  <p class="text-center text-sm opacity-90 mt-1">تعلم | سجّل | شاهد | احصل على شهادتك</p>
+    <h1 class="text-2xl font-bold text-center">منصة التعلم الإلكتروني | Skillzoy academy</h1>
 </header>
 
 <main class="max-w-7xl mx-auto p-4">
-
-<!-- Home Section -->
-<section id="homeSection" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></section>
-
-<!-- My Courses Section -->
-<section id="myCoursesSection" class="hidden">
-  <h2 class="text-xl font-bold mb-6">🎓 دوراتي</h2>
-  <div id="myCoursesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-</section>
-
-<!-- Player Section -->
-<section id="playerSection" class="hidden">
-  <button onclick="backToMyCourses()"
-    class="mb-4 text-indigo-600 font-semibold hover:underline transition">
-    ← الرجوع إلى دوراتي
-  </button>
-
-  <h2 id="playerTitle" class="text-xl font-bold mb-4"></h2>
-  <iframe id="playerFrame"
-    class="w-full h-[420px] rounded-xl shadow"
-    allowfullscreen></iframe>
-</section>
-
+    <section id="homeSection" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></section>
+    <section id="myCoursesSection" class="hidden">
+        <h2 class="text-xl font-bold mb-6">🎓 دوراتي</h2>
+        <div id="myCoursesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+    <section id="playerSection" class="hidden">
+        <button onclick="backToMyCourses()" class="mb-4 text-indigo-600 font-semibold hover:underline transition">← الرجوع إلى دوراتي</button>
+        <h2 id="playerTitle" class="text-xl font-bold mb-4"></h2>
+        <!-- حاوية مشغل يوتيوب -->
+        <div id="playerContainer" class="w-full h-[420px] rounded-xl shadow bg-black"></div>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <p class="text-gray-600 text-sm">التقدم الحقيقي</p>
+                <p id="realProgressText" class="text-2xl font-bold text-green-600">0%</p>
+                <div class="h-2 bg-gray-200 rounded-full mt-2">
+                    <div id="realProgressBar" class="h-full bg-green-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <p class="text-gray-600 text-sm">الفيديو الحالي</p>
+                <p id="currentVideoText" class="text-2xl font-bold text-blue-600">1</p>
+                <p class="text-gray-500 text-xs mt-1">من <span id="totalVideosText">0</span> فيديو</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <p class="text-gray-600 text-sm">تم حفظ موقعك</p>
+                <p class="text-lg font-semibold text-purple-600">✅</p>
+                <p class="text-gray-500 text-xs mt-1">ستواصل من حيث توقفت</p>
+            </div>
+        </div>
+    </section>
 </main>
 
-<!-- WhatsApp Button -->
-<a id="whatsappButton" href="https://wa.me/966500000000" target="_blank"
-   class="fixed left-5 bottom-5 bg-green-600 text-white w-14 h-14 flex items-center justify-center
-   rounded-full shadow-lg hover:scale-110 transition z-50 hidden">
-  📱
+<!-- زر واتساب ثابت -->
+<a href="https://wa.me/0908280115" target="_blank" class="fixed left-5 bottom-5 bg-green-600 text-white w-14 h-14 flex items-center justify-center rounded-full shadow-lg hover:scale-110 transition z-50">
+    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.507 14.307l-.009.075c-.405 1.244-2.115 2.243-2.766 2.243-1.604 0-3.119-1.457-4.312-2.693-1.95-1.976-3.233-5.022-3.233-6.709 0-1.704 1.505-2.245 2.098-2.245h.434c.405 0 .74.31.855.714.115.404.403 1.402.434 1.505.087.344.161.736.022 1.099-.139.363-.232.527-.434.789-.202.262-.3.404-.434.628-.115.225-.231.483-.115.788.115.305.481 1.305.934 2.115.575 1.007 1.224 1.858 2.033 2.393.694.454 1.393.787 2.212.981.363.087.797.061 1.076-.087.279-.148.694-.433 1.066-.788.363-.363.81-.844 1.129-1.161.278-.28.625-.417.981-.405.356.011 1.161.231 1.705.526.544.295.923.472 1.05.73s.087.625-.023.894zM12 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-18c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8z"/></svg>
 </a>
 
-<div id="whatsappTooltip"
-     class="fixed left-24 bottom-5 bg-gray-800 text-white px-4 py-2 rounded shadow opacity-0 transition z-40 pointer-events-none">
-  تواصل معنا للحصول على شهادتك بعد إكمال الدورة ✅
-</div>
-
-<!-- Bottom Nav -->
 <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow flex justify-around py-3">
-  <button onclick="showHome()" class="font-semibold text-indigo-700">🏠 الرئيسية</button>
-  <button onclick="showMyCourses()" class="text-gray-500">🎓 دوراتي</button>
+    <button onclick="showHome()" class="font-semibold text-indigo-700">🏠 الرئيسية</button>
+    <button onclick="showMyCourses()" class="text-gray-500">🎓 دوراتي</button>
 </nav>
 
 <script>
-/* ====== DATA ====== */
+/* === البيانات الأساسية === */
 const courses = [
-  {
-    id: "react1",
-    title: "React.js",
-    desc: "تطوير واجهات المستخدم",
-    preview: "https://www.youtube.com/embed/dGcsHMXbSOA",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS"
-  },
-  {
-    id: "excel1",
-    title: "Excel المتقدم",
-    desc: "تحليل البيانات",
-    preview: "https://www.youtube.com/embed/0nbkaYsR94c",
-    playlist: "https://www.youtube.com/embed/videoseries?list=PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK"
-  }
-  // ✅ لإضافة دورة جديدة: أضف كائن جديد هنا
+    {
+        id: "react",
+        title: "React.js",
+        desc: "تطوير واجهات المستخدم",
+        playlistId: "PLYyqC4bNbCIdSZ-JayMLl4WO2Cr995vyS",
+        videoCount: 25 // سيتم تحديثه تلقائياً من API لاحقاً
+    },
+    {
+        id: "excel",
+        title: "Excel المتقدم",
+        desc: "تحليل البيانات",
+        playlistId: "PLVn5UigDlJB8ZU35J4RyyEwfjJ9RH7-MK",
+        videoCount: 18
+    },
+    {
+        id: "ai",
+        title: "AI المتقدم",
+        desc: "تحليل البيانات",
+        playlistId: "PLSLMEu6gRp1Zw-4GFG0dFLFX5q48ZYe_T",
+        videoCount: 32
+    }
 ];
 
+/* === حالة التطبيق === */
 let myCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
+// تخزين التقدم الحقيقي: { courseId: { watchedVideos: [true,false,...], lastVideoIndex: 0, lastTime: 0, totalVideos: 20 } }
+let courseProgress = JSON.parse(localStorage.getItem("courseProgress")) || {};
+let player = null; // كائن مشغل يوتيوب
+let currentCourse = null; // الدورة الحالية
 
-/* ====== HOME ====== */
+/* === YouTube IFrame API === */
+// 1. هذه الدالة تستدعى تلقائياً من قبل مكتبة يوتيوب[citation:2]
+function onYouTubeIframeAPIReady() {
+    console.log("YouTube IFrame API جاهز للاستخدام");
+    // لا نقوم بإنشاء مشغل هنا، بل عندما يفتح المستخدم دورة معينة
+}
+
+// 2. إنشاء مشغل لقائمة تشغيل معينة
+function createPlayerForCourse(course) {
+    if (player) {
+        player.destroy(); // تدمير المشغل القديم إن وجد
+    }
+    
+    const progress = courseProgress[course.id] || { lastVideoIndex: 0, lastTime: 0 };
+    
+    player = new YT.Player('playerContainer', {
+        height: '420',
+        width: '100%',
+        playerVars: {
+            'listType': 'playlist',
+            'list': course.playlistId,
+            'index': progress.lastVideoIndex || 0, // تبدأ من الفيديو الأخير المشاهد
+            'enablejsapi': 1, // 🔥 ضروري للتحكم والتتبع[citation:1]
+            'modestbranding': 1,
+            'rel': 0
+        },
+        events: {
+            'onReady': function(event) {
+                console.log("المشغل جاهز");
+                // استعادة وقت التشغيل السابق
+                if (progress.lastTime > 0) {
+                    setTimeout(() => event.target.seekTo(progress.lastTime), 500);
+                }
+                updateProgressUI();
+                startProgressTracker();
+            },
+            'onStateChange': function(event) {
+                // عندما ينتهي الفيديو (state = 0) سجل كمكتمل[citation:5]
+                if (event.data === YT.PlayerState.ENDED) {
+                    markVideoAsWatched();
+                }
+            }
+        }
+    });
+}
+
+// 3. تحديث واجهة التقدم
+function updateProgressUI() {
+    if (!currentCourse) return;
+    const progress = courseProgress[currentCourse.id];
+    if (!progress || !progress.watchedVideos) return;
+    
+    const watchedCount = progress.watchedVideos.filter(v => v).length;
+    const total = progress.totalVideos || currentCourse.videoCount;
+    const percentage = total > 0 ? Math.round((watchedCount / total) * 100) : 0;
+    
+    document.getElementById('realProgressText').textContent = percentage + '%';
+    document.getElementById('realProgressBar').style.width = percentage + '%';
+    document.getElementById('totalVideosText').textContent = total;
+    
+    // تحديث رقم الفيديو الحالي
+    if (player && player.getPlaylistIndex) {
+        const currentIdx = player.getPlaylistIndex();
+        document.getElementById('currentVideoText').textContent = (currentIdx + 1);
+    }
+}
+
+// 4. تتبع التقدم وحفظه
+function startProgressTracker() {
+    // حفظ الموقع كل 5 ثوانٍ
+    setInterval(() => {
+        if (player && currentCourse && player.getCurrentTime && player.getPlaylistIndex) {
+            const progress = courseProgress[currentCourse.id] || {};
+            progress.lastVideoIndex = player.getPlaylistIndex();
+            progress.lastTime = player.getCurrentTime();
+            progress.totalVideos = player.getPlaylist()?.length || currentCourse.videoCount;
+            
+            courseProgress[currentCourse.id] = progress;
+            localStorage.setItem("courseProgress", JSON.stringify(courseProgress));
+        }
+    }, 5000); // كل 5 ثوانٍ
+}
+
+// 5. وضع علامة على الفيديو كمشاهد
+function markVideoAsWatched() {
+    if (!currentCourse || !player) return;
+    
+    let progress = courseProgress[currentCourse.id];
+    if (!progress) progress = { watchedVideos: [] };
+    if (!progress.watchedVideos) progress.watchedVideos = [];
+    
+    const currentIdx = player.getPlaylistIndex();
+    if (currentIdx >= 0 && !progress.watchedVideos[currentIdx]) {
+        progress.watchedVideos[currentIdx] = true;
+        courseProgress[currentCourse.id] = progress;
+        localStorage.setItem("courseProgress", JSON.stringify(courseProgress));
+        updateProgressUI();
+        // تحديث العرض في الصفحة الرئيسية ودوراتي
+        renderHome();
+        renderMyCourses();
+    }
+}
+
+/* === إدارة الدورات === */
 function renderHome() {
-  homeSection.innerHTML = "";
-  courses.forEach(c => {
-    const enrolled = myCourses.includes(c.id);
-    homeSection.innerHTML += `
-      <div class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
-        <iframe class="w-full h-52" src="${c.preview}" allowfullscreen></iframe>
-        <div class="p-5">
-          <h3 class="font-bold text-lg mb-1">${c.title}</h3>
-          <p class="text-sm text-gray-600 mb-4">${c.desc}</p>
-          <button onclick="handleCourse('${c.id}')"
-            class="w-full py-3 rounded-xl font-semibold text-white transition
-            ${enrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}
-            active:scale-95">
-            ${enrolled ? '🚀 ابدأ التعلّم' : 'تسجيل في الدورة'}
-          </button>
-        </div>
-      </div>`;
-  });
+    const homeSection = document.getElementById('homeSection');
+    homeSection.innerHTML = '';
+    
+    courses.forEach(c => {
+        const enrolled = myCourses.includes(c.id);
+        const progress = courseProgress[c.id];
+        const watchedCount = progress?.watchedVideos?.filter(v => v).length || 0;
+        const total = progress?.totalVideos || c.videoCount;
+        const percentage = total > 0 ? Math.round((watchedCount / total) * 100) : 0;
+        
+        homeSection.innerHTML += `
+            <div class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
+                <div class="h-52 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-4xl mb-2">${c.id === 'react' ? '⚛️' : c.id === 'excel' ? '📊' : '🤖'}</div>
+                        <p class="font-bold">${c.title}</p>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg mb-1">${c.title}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${c.desc}</p>
+                    ${enrolled && progress ? `
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>التقدم الحقيقي</span>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full">
+                                <div class="h-full bg-green-500 rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">${watchedCount} من ${total} فيديو</p>
+                        </div>
+                    ` : ''}
+                    <button onclick="handleCourse('${c.id}')"
+                        class="w-full py-3 rounded-xl font-semibold text-white transition
+                        ${enrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}
+                        active:scale-95">
+                        ${enrolled ? '🚀 ابدأ / استئناف التعلم' : 'تسجيل في الدورة'}
+                    </button>
+                </div>
+            </div>`;
+    });
 }
 
-/* ====== HANDLE COURSE ====== */
 function handleCourse(id) {
-  if (!myCourses.includes(id)) {
-    myCourses.push(id);
-    localStorage.setItem("myCourses", JSON.stringify(myCourses));
-  }
-  renderHome();
-  renderMyCourses();
-  showMyCourses();
-  showWhatsApp();
+    const course = courses.find(c => c.id === id);
+    if (!course) return;
+    
+    // تسجيل الدورة إن لم تكن مسجلة
+    if (!myCourses.includes(id)) {
+        myCourses.push(id);
+        localStorage.setItem("myCourses", JSON.stringify(myCourses));
+        
+        // تهيئة بيانات التقدم
+        if (!courseProgress[id]) {
+            courseProgress[id] = {
+                watchedVideos: [],
+                lastVideoIndex: 0,
+                lastTime: 0,
+                totalVideos: course.videoCount
+            };
+            localStorage.setItem("courseProgress", JSON.stringify(courseProgress));
+        }
+    }
+    
+    currentCourse = course;
+    document.getElementById('playerTitle').textContent = course.title;
+    
+    // الانتقال إلى قسم المشغل
+    document.getElementById('homeSection').classList.add('hidden');
+    document.getElementById('myCoursesSection').classList.add('hidden');
+    document.getElementById('playerSection').classList.remove('hidden');
+    
+    // إنشاء مشغل يوتيوب
+    createPlayerForCourse(course);
 }
 
-/* ====== MY COURSES ====== */
 function renderMyCourses() {
-  myCoursesList.innerHTML = "";
-  if (myCourses.length === 0) {
-    myCoursesList.innerHTML = "<p class='text-gray-500'>لم تسجل في أي دورة بعد</p>";
-    hideWhatsApp();
-    return;
-  }
-  myCourses.forEach(id => {
-    const c = courses.find(course => course.id === id);
-    if (!c) return;
-    myCoursesList.innerHTML += `
-      <div class="bg-white rounded-xl shadow p-5">
-        <h3 class="font-semibold mb-4">${c.title}</h3>
-        <button onclick="openCourse('${id}')"
-          class="w-full mb-3 bg-green-600 text-white py-2 rounded-xl
-          hover:bg-green-700 transition active:scale-95">
-          🚀 ابدأ التعلّم
-        </button>
-        <button onclick="removeCourse('${id}')"
-          class="w-full border border-red-400 text-red-600 py-2 rounded-xl
-          hover:bg-red-500 hover:text-white transition active:scale-95">
-          ❌ إلغاء التسجيل
-        </button>
-      </div>`;
-  });
-  if (myCourses.length > 0) showWhatsApp();
-  else hideWhatsApp();
+    const myCoursesList = document.getElementById('myCoursesList');
+    if (myCourses.length === 0) {
+        myCoursesList.innerHTML = '<p class="text-gray-500 col-span-3 text-center py-8">لم تسجل في أي دورة بعد</p>';
+        return;
+    }
+    
+    myCoursesList.innerHTML = '';
+    myCourses.forEach(courseId => {
+        const course = courses.find(c => c.id === courseId);
+        if (!course) return;
+        
+        const progress = courseProgress[courseId];
+        const watchedCount = progress?.watchedVideos?.filter(v => v).length || 0;
+        const total = progress?.totalVideos || course.videoCount;
+        const percentage = total > 0 ? Math.round((watchedCount / total) * 100) : 0;
+        
+        myCoursesList.innerHTML += `
+            <div class="bg-white rounded-xl shadow p-5">
+                <h3 class="font-semibold mb-2">${course.title}</h3>
+                <p class="text-sm text-gray-600 mb-4">${course.desc}</p>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>الإنجاز</span>
+                        <span>${percentage}%</span>
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full">
+                        <div class="h-full bg-green-500 rounded-full" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <button onclick="handleCourse('${courseId}')"
+                    class="w-full mb-3 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition">
+                    🚀 ${percentage > 0 ? 'استئناف التعلم' : 'ابدأ التعلم'}
+                </button>
+                <button onclick="removeCourse('${courseId}')"
+                    class="w-full border border-red-400 text-red-600 py-2 rounded-xl hover:bg-red-50 transition">
+                    ❌ إلغاء التسجيل
+                </button>
+            </div>`;
+    });
 }
 
-/* ====== PLAYER ====== */
-function openCourse(id) {
-  const c = courses.find(course => course.id === id);
-  if (!c) return;
-  playerTitle.textContent = c.title;
-  playerFrame.src = c.playlist;
-
-  homeSection.classList.add("hidden");
-  myCoursesSection.classList.add("hidden");
-  playerSection.classList.remove("hidden");
-}
-
-/* ====== BACK ====== */
-function backToMyCourses() {
-  playerSection.classList.add("hidden");
-  showMyCourses();
-}
-
-/* ====== REMOVE COURSE ====== */
 function removeCourse(id) {
-  myCourses = myCourses.filter(course => course !== id);
-  localStorage.setItem("myCourses", JSON.stringify(myCourses));
-  renderHome();
-  renderMyCourses();
+    if (confirm('هل أنت متأكد من إلغاء التسجيل؟ سيتم حذف تقدمك أيضاً.')) {
+        myCourses = myCourses.filter(cId => cId !== id);
+        localStorage.setItem("myCourses", JSON.stringify(myCourses));
+        
+        delete courseProgress[id];
+        localStorage.setItem("courseProgress", JSON.stringify(courseProgress));
+        
+        renderHome();
+        renderMyCourses();
+    }
 }
 
-/* ====== NAV ====== */
+/* === التنقل === */
+function backToMyCourses() {
+    if (player) {
+        player.destroy();
+        player = null;
+    }
+    currentCourse = null;
+    document.getElementById('playerSection').classList.add('hidden');
+    showMyCourses();
+}
+
 function showHome() {
-  homeSection.classList.remove("hidden");
-  myCoursesSection.classList.add("hidden");
-  playerSection.classList.add("hidden");
-  renderHome();
+    document.getElementById('homeSection').classList.remove('hidden');
+    document.getElementById('myCoursesSection').classList.add('hidden');
+    document.getElementById('playerSection').classList.add('hidden');
+    renderHome();
 }
 
 function showMyCourses() {
-  homeSection.classList.add("hidden");
-  myCoursesSection.classList.remove("hidden");
-  playerSection.classList.add("hidden");
-  renderMyCourses();
+    document.getElementById('homeSection').classList.add('hidden');
+    document.getElementById('myCoursesSection').classList.remove('hidden');
+    document.getElementById('playerSection').classList.add('hidden');
+    renderMyCourses();
 }
 
-/* ====== WHATSAPP ====== */
-function showWhatsApp() {
-  const btn = document.getElementById("whatsappButton");
-  const tooltip = document.getElementById("whatsappTooltip");
-  btn.classList.remove("hidden");
-  btn.addEventListener("mouseenter", () => tooltip.classList.add("opacity-100"));
-  btn.addEventListener("mouseleave", () => tooltip.classList.remove("opacity-100"));
+/* === إدارة الإشعارات === */
+function closeToast() {
+    const toast = document.getElementById('certificateToast');
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-20px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.style.display = 'none', 300);
 }
 
-function hideWhatsApp() {
-  const btn = document.getElementById("whatsappButton");
-  const tooltip = document.getElementById("whatsappTooltip");
-  btn.classList.add("hidden");
-  tooltip.classList.remove("opacity-100");
-}
+// إخفاء الإشعار تلقائياً بعد 5 ثوانٍ
+setTimeout(closeToast, 5000);
 
-/* ====== INIT ====== */
-renderHome();
-renderMyCourses();
-if (myCourses.length > 0) showWhatsApp();
+/* === التهيئة === */
+document.addEventListener('DOMContentLoaded', function() {
+    renderHome();
+    renderMyCourses();
+});
+
+/* === أسلوب CSS للرسوم المتحركة === */
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInDown {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .animate-slideInDown {
+        animation: slideInDown 0.5s ease-out;
+    }
+`;
+document.head.appendChild(style);
+
+/* === الأمان (الكود الحالي) === */
+(() => {
+    document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey && e.shiftKey && ["I", "C", "J", "L"].includes(e.key.toUpperCase())) || (e.key === "F12") || (e.ctrlKey && e.key.toUpperCase() === "U")) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener("copy", e => e.preventDefault());
+    document.addEventListener("cut", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("selectstart", e => e.preventDefault());
+})();
 </script>
-
 </body>
 </html>
