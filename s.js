@@ -1,5 +1,5 @@
 
-<script>
+
 /* ====== DATA ====== */
 const courses = [
   {
@@ -495,4 +495,4 @@ window.addEventListener('scroll', () => {
         if (Date.now() - t > 100) console.clear();
       }, 500);
     })();
-</script>
+
