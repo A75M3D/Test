@@ -312,6 +312,21 @@
             #cartSidebar { width: 100%; right: -100%; }
             .install-btn { bottom: 20px; right: 20px; padding: 10px 20px; }
         }
+
+        /* تنسيقات الفلاتر */
+        .filter-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .filter-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .filter-scroll::-webkit-scrollbar-thumb {
+            background: #8B7355;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body class="bg-light text-gray-800 font-cairo">
@@ -438,7 +453,7 @@
                         <h2 class="text-4xl playfair font-bold text-dark mb-4">منتجاتنا المميزة</h2>
                         <div class="w-20 h-1 bg-secondary mr-0 lg:mr-auto"></div>
                     </div>
-                    <div class="flex flex-wrap gap-3" id="filtersContainer"></div>
+                    <div class="filter-scroll flex flex-nowrap gap-3 pb-2" id="filtersContainer"></div>
                 </div>
 
                 <!-- حالة التحميل -->
@@ -533,6 +548,7 @@
         let cart = JSON.parse(localStorage.getItem('futureStoreCart')) || [];
         let currentCategory = 'الكل';
         let currentCarouselIndex = 0;
+        let carouselTimer;
 
         // عناصر DOM
         const loadingScreen = document.getElementById('loadingScreen');
@@ -620,6 +636,7 @@
                 await loadProducts();
                 await loadSpecialOffers();
                 setupCarousel();
+                startCarouselAutoRotate();
                 setupEventListeners();
                 updateCartUI();
             } catch (error) {
@@ -637,13 +654,48 @@
             closeToast.addEventListener('click', () => toast.classList.add('hidden'));
             mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('-translate-y-full'));
             document.addEventListener('keydown', (e) => e.key === 'Escape' && closeCartSidebar());
+
+            // إيقاف التشغيل التلقائي عند التمرير فوق الكاروسيل
+            carousel.addEventListener('mouseenter', stopCarouselAutoRotate);
+            carousel.addEventListener('mouseleave', startCarouselAutoRotate);
         }
 
         // ==================== جلب المنتجات من Firebase ====================
         async function loadProducts() {
             try {
                 const snapshot = await db.collection('users').orderBy('created_at', 'desc').get();
-                products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (!snapshot.empty) {
+                    products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    // بيانات افتراضية متنوعة تشمل ملبوسات، اكسسوارات، تجميل
+                    products = [
+                        // ملبوسات رجالية
+                        { id: '1', name: 'بدلة رجالية فاخرة', category: 'ملبوسات رجالية', price: 1200, original_price: 1500, image_url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'بدلة رسمية أنيقة من قماش فاخر' },
+                        { id: '2', name: 'قميص قطني', category: 'ملبوسات رجالية', price: 250, image_url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'قميص بأكمام طويلة مناسب للعمل' },
+                        // ملبوسات نسائية
+                        { id: '3', name: 'فستان سهرة', category: 'ملبوسات نسائية', price: 850, original_price: 1100, image_url: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'فستان أنيق مناسب للمناسبات' },
+                        { id: '4', name: 'بلوزة حرير', category: 'ملبوسات نسائية', price: 320, image_url: 'https://images.unsplash.com/photo-1604695573708-5313c7c57afd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'بلوزة ناعمة بأكمام قصيرة' },
+                        // ملبوسات أطفال
+                        { id: '5', name: 'طقم أطفال', category: 'ملبوسات أطفال', price: 180, image_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'طقم مكون من بنطلون وقميص' },
+                        // اكسسوارات - ساعات
+                        { id: '6', name: 'ساعة يد فاخرة', category: 'اكسسوارات', price: 550, original_price: 700, image_url: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'ساعة بعقارب ذهبية' },
+                        // اكسسوارات - نظارات
+                        { id: '7', name: 'نظارة شمسية', category: 'اكسسوارات', price: 220, image_url: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'نظارة بتصميم عصري' },
+                        // اكسسوارات - مجوهرات
+                        { id: '8', name: 'سلسال ذهب', category: 'اكسسوارات', price: 950, image_url: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'سلسال من الذهب عيار 18' },
+                        // اكسسوارات - أحزمة
+                        { id: '9', name: 'حزام جلدي', category: 'اكسسوارات', price: 150, image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حزام بني فاخر' },
+                        // منتجات تجميل - عطور
+                        { id: '10', name: 'عطر فرنسي', category: 'تجميل', price: 430, original_price: 600, image_url: 'https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'عطر برائحة خشبية' },
+                        // منتجات تجميل - مكياج
+                        { id: '11', name: 'أحمر شفاه', category: 'تجميل', price: 85, image_url: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'أحمر شفاه طويل الأمد' },
+                        // منتجات تجميل - عناية بالبشرة
+                        { id: '12', name: 'كريم ترطيب', category: 'تجميل', price: 120, image_url: 'https://images.unsplash.com/photo-1556229010-aa3f7ff66b24?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'كريم مغذي للبشرة' },
+                        // أحذية
+                        { id: '13', name: 'حذاء رياضي', category: 'أحذية', price: 320, original_price: 400, image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حذاء رياضي مريح' },
+                        { id: '14', name: 'حذاء رسمي', category: 'أحذية', price: 450, image_url: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حذاء جلدي أنيق' },
+                    ];
+                }
                 displayFilters();
                 displayProducts();
             } catch (error) {
@@ -654,12 +706,17 @@
         async function loadSpecialOffers() {
             try {
                 const snapshot = await db.collection('users').where('badge', '==', 'عرض خاص').limit(6).get();
-                specialOffers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (specialOffers.length === 0) {
-                    // بيانات افتراضية للعروض
+                if (!snapshot.empty) {
+                    specialOffers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    // عروض خاصة افتراضية
                     specialOffers = [
-                        { id: 1, name: 'هاتف ذكي', price: 1699, original_price: 2199, image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' },
-                        { id: 2, name: 'سماعات لاسلكية', price: 249, original_price: 399, image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' }
+                        { id: '101', name: 'هاتف ذكي', price: 1699, original_price: 2199, image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' },
+                        { id: '102', name: 'سماعات لاسلكية', price: 249, original_price: 399, image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' },
+                        { id: '103', name: 'ساعة ذكية', price: 399, original_price: 550, image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' },
+                        { id: '104', name: 'نظارة واقع افتراضي', price: 699, original_price: 999, image_url: 'https://images.unsplash.com/photo-1593113630400-ea4288922497?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'إلكترونيات' },
+                        { id: '105', name: 'روبوت تنظيف', price: 999, original_price: 1500, image_url: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'أجهزة منزلية' },
+                        { id: '106', name: 'حذاء رياضي', price: 299, original_price: 450, image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', category: 'أحذية' },
                     ];
                 }
                 renderCarousel();
@@ -670,11 +727,17 @@
 
         // ==================== عرض الفلاتر ====================
         function displayFilters() {
-            const categories = ['الكل', ...new Set(products.map(p => p.category))];
+            // استخراج كل الفئات من المنتجات (بدون تكرار)
+            const allCategories = products.map(p => p.category);
+            // إضافة فئات إضافية قد لا تكون موجودة في المنتجات ولكن نريد عرضها
+            const extraCategories = ['ملبوسات رجالية', 'ملبوسات نسائية', 'ملبوسات أطفال', 'اكسسوارات', 'تجميل', 'أحذية'];
+            const merged = [...new Set([...allCategories, ...extraCategories])];
+            const categories = ['الكل', ...merged.sort()];
+            
             filtersContainer.innerHTML = '';
             categories.forEach(cat => {
                 const btn = document.createElement('button');
-                btn.className = `px-6 py-2 rounded-full font-medium transition-colors ${cat === currentCategory ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;
+                btn.className = `px-6 py-2 rounded-full font-medium transition-colors whitespace-nowrap ${cat === currentCategory ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;
                 btn.textContent = cat;
                 btn.onclick = () => filterByCategory(cat);
                 filtersContainer.appendChild(btn);
@@ -683,7 +746,7 @@
 
         function filterByCategory(cat) {
             currentCategory = cat;
-            displayFilters();
+            displayFilters(); // لإعادة تلوين الأزرار
             displayProducts();
         }
 
@@ -691,22 +754,36 @@
         function displayProducts() {
             loadingProducts.classList.add('hidden');
             productsGrid.classList.remove('hidden');
-            const filtered = currentCategory === 'الكل' ? products : products.filter(p => p.category === currentCategory);
+            
+            // فلترة حسب الفئة المختارة
+            let filtered = [];
+            if (currentCategory === 'الكل') {
+                filtered = products;
+            } else {
+                filtered = products.filter(p => p.category === currentCategory);
+            }
+            
             if (filtered.length === 0) {
                 emptyState.classList.remove('hidden');
                 productsGrid.classList.add('hidden');
                 return;
             }
+            
             emptyState.classList.add('hidden');
             productsGrid.innerHTML = filtered.map(p => `
                 <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg hover-lift">
-                    <div class="h-64 overflow-hidden"><img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}" class="w-full h-full object-cover product-image"></div>
+                    <div class="h-64 overflow-hidden">
+                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}" class="w-full h-full object-cover product-image">
+                    </div>
                     <div class="p-6">
                         <div class="text-primary text-sm font-semibold mb-2">${p.category}</div>
-                        <h3 class="text-lg font-bold text-dark mb-3">${p.name}</h3>
+                        <h3 class="text-lg font-bold text-dark mb-3 line-clamp-1">${p.name}</h3>
                         <p class="text-gray-600 text-sm mb-4 line-clamp-2">${p.description || ''}</p>
                         <div class="flex items-center justify-between mb-6">
-                            <div><span class="text-2xl font-bold text-burgundy">${p.price} ج.س</span>${p.original_price ? `<span class="text-gray-400 line-through text-sm mr-2">${p.original_price} ج.س</span>` : ''}</div>
+                            <div>
+                                <span class="text-2xl font-bold text-burgundy">${p.price} ج.س</span>
+                                ${p.original_price ? `<span class="text-gray-400 line-through text-sm mr-2">${p.original_price} ج.س</span>` : ''}
+                            </div>
                         </div>
                         <button onclick="addToCart('${p.id}')" class="w-full py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
                             <i class="fas fa-shopping-bag"></i> أضف إلى السلة
@@ -727,7 +804,10 @@
                     <img src="${offer.image_url}" alt="${offer.name}" class="w-full h-48 object-cover">
                     <div class="p-4 bg-white">
                         <h3 class="font-bold">${offer.name}</h3>
-                        <div class="text-primary font-bold">${offer.price} ج.س</div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-primary font-bold">${offer.price} ج.س</span>
+                            ${offer.original_price ? `<span class="text-gray-400 line-through text-sm">${offer.original_price} ج.س</span>` : ''}
+                        </div>
                         <button onclick="addToCart('${offer.id}')" class="mt-2 w-full bg-secondary text-white py-2 rounded">أضف إلى السلة</button>
                     </div>
                 `;
@@ -735,7 +815,11 @@
 
                 const indicator = document.createElement('div');
                 indicator.className = `w-3 h-3 rounded-full cursor-pointer ${index === 0 ? 'bg-secondary' : 'bg-gray-300'}`;
-                indicator.onclick = () => rotateCarousel(index);
+                indicator.onclick = () => {
+                    stopCarouselAutoRotate();
+                    rotateCarousel(index);
+                    startCarouselAutoRotate();
+                };
                 carouselIndicators.appendChild(indicator);
             });
             updateCarouselPositions();
@@ -762,20 +846,57 @@
         }
 
         function setupCarousel() {
-            prevBtn.addEventListener('click', () => rotateCarousel(currentCarouselIndex - 1));
-            nextBtn.addEventListener('click', () => rotateCarousel(currentCarouselIndex + 1));
+            prevBtn.addEventListener('click', () => {
+                stopCarouselAutoRotate();
+                rotateCarousel(currentCarouselIndex - 1);
+                startCarouselAutoRotate();
+            });
+            nextBtn.addEventListener('click', () => {
+                stopCarouselAutoRotate();
+                rotateCarousel(currentCarouselIndex + 1);
+                startCarouselAutoRotate();
+            });
+        }
+
+        // التشغيل التلقائي للكاروسيل
+        function startCarouselAutoRotate() {
+            if (carouselTimer) clearInterval(carouselTimer);
+            carouselTimer = setInterval(() => {
+                rotateCarousel(currentCarouselIndex + 1);
+            }, 4000);
+        }
+
+        function stopCarouselAutoRotate() {
+            if (carouselTimer) {
+                clearInterval(carouselTimer);
+                carouselTimer = null;
+            }
         }
 
         // ==================== إدارة السلة ====================
         window.addToCart = function(productId) {
-            const product = [...products, ...specialOffers].find(p => p.id == productId);
+            // البحث في المنتجات الرئيسية ثم في العروض الخاصة
+            let product = products.find(p => p.id == productId);
+            if (!product) product = specialOffers.find(p => p.id == productId);
             if (!product) return;
+            
             const existing = cart.find(item => item.id == productId);
-            if (existing) existing.quantity++;
-            else cart.push({ id: product.id, name: product.name, price: product.price, image_url: product.image_url, quantity: 1 });
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ 
+                    id: product.id, 
+                    name: product.name, 
+                    price: product.price, 
+                    image_url: product.image_url, 
+                    quantity: 1 
+                });
+            }
             updateCartUI();
             localStorage.setItem('futureStoreCart', JSON.stringify(cart));
             showToast('تمت الإضافة', 'تم إضافة المنتج إلى السلة', 'success');
+            
+            // تأثير نبض على زر السلة
             cartButton.classList.add('pulse-gold');
             setTimeout(() => cartButton.classList.remove('pulse-gold'), 600);
         };
@@ -783,8 +904,9 @@
         function updateCartUI() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = totalItems;
+            
             if (cart.length === 0) {
-                cartItems.innerHTML = '<div class="empty-cart text-center py-12"><i class="fas fa-shopping-bag text-gray-400 text-5xl mb-4"></i><p class="text-gray-600">سلة التسوق فارغة</p></div>';
+                cartItems.innerHTML = '<div class="text-center py-12"><i class="fas fa-shopping-bag text-gray-400 text-5xl mb-4"></i><p class="text-gray-600">سلة التسوق فارغة</p></div>';
             } else {
                 cartItems.innerHTML = cart.map(item => `
                     <div class="flex gap-4 bg-gray-50 p-4 rounded-xl mb-4">
@@ -793,42 +915,78 @@
                             <h4 class="font-bold">${item.name}</h4>
                             <div class="flex items-center justify-between mt-2">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="decreaseQuantity('${item.id}')" class="w-8 h-8 bg-gray-200 rounded-full">-</button>
+                                    <button onclick="decreaseQuantity('${item.id}')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300">-</button>
                                     <span>${item.quantity}</span>
-                                    <button onclick="increaseQuantity('${item.id}')" class="w-8 h-8 bg-gray-200 rounded-full">+</button>
+                                    <button onclick="increaseQuantity('${item.id}')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300">+</button>
                                 </div>
                                 <span class="font-bold text-burgundy">${item.price * item.quantity} ج.س</span>
-                                <button onclick="removeFromCart('${item.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                                <button onclick="removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
                 `).join('');
             }
+            
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
             cartTotal.textContent = total.toLocaleString('ar-SA') + ' ج.س';
         }
 
-        window.increaseQuantity = (id) => { cart.find(i => i.id == id).quantity++; updateCartUI(); localStorage.setItem('futureStoreCart', JSON.stringify(cart)); };
+        window.increaseQuantity = (id) => {
+            const item = cart.find(i => i.id == id);
+            if (item) {
+                item.quantity++;
+                updateCartUI();
+                localStorage.setItem('futureStoreCart', JSON.stringify(cart));
+            }
+        };
+        
         window.decreaseQuantity = (id) => {
             const item = cart.find(i => i.id == id);
-            if (item.quantity > 1) { item.quantity--; updateCartUI(); } else { removeFromCart(id); }
+            if (item) {
+                if (item.quantity > 1) {
+                    item.quantity--;
+                } else {
+                    removeFromCart(id);
+                    return;
+                }
+                updateCartUI();
+                localStorage.setItem('futureStoreCart', JSON.stringify(cart));
+            }
+        };
+        
+        window.removeFromCart = (id) => {
+            cart = cart.filter(i => i.id != id);
+            updateCartUI();
             localStorage.setItem('futureStoreCart', JSON.stringify(cart));
         };
-        window.removeFromCart = (id) => { cart = cart.filter(i => i.id != id); updateCartUI(); localStorage.setItem('futureStoreCart', JSON.stringify(cart)); };
 
-        function openCart() { cartSidebar.classList.add('open'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeCartSidebar() { cartSidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        function openCart() { 
+            cartSidebar.classList.add('open'); 
+            overlay.classList.add('active'); 
+            document.body.style.overflow = 'hidden'; 
+        }
+        
+        function closeCartSidebar() { 
+            cartSidebar.classList.remove('open'); 
+            overlay.classList.remove('active'); 
+            document.body.style.overflow = 'auto'; 
+        }
 
         function sendWhatsAppOrder() {
-            if (cart.length === 0) { showToast('السلة فارغة', 'أضف منتجات أولاً', 'error'); return; }
+            if (cart.length === 0) { 
+                showToast('السلة فارغة', 'أضف منتجات أولاً', 'error'); 
+                return; 
+            }
             deliveryCar.classList.add('active');
             setTimeout(() => {
                 deliveryCar.classList.add('delivering');
-                let message = 'مرحباً، أريد طلب المنتجات التالية:\n\n';
-                cart.forEach((item, i) => message += `${i+1}. ${item.name} (${item.quantity}) - ${item.price * item.quantity} ج.س\n`);
+                let message = 'مرحباً، أريد طلب المنتجات التالية من متجر المستقبل:\n\n';
+                cart.forEach((item, i) => {
+                    message += `${i+1}. ${item.name} (العدد: ${item.quantity}) - ${item.price * item.quantity} ج.س\n`;
+                });
                 const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
                 message += `\nالمجموع: ${total.toLocaleString('ar-SA')} ج.س`;
-                const phoneNumber = '249113018064';
+                const phoneNumber = '249113018064'; // ضع رقم الواتساب هنا
                 window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
                 setTimeout(() => deliveryCar.classList.remove('active', 'delivering'), 1500);
             }, 1000);
@@ -837,7 +995,12 @@
         function showToast(title, msg, type = 'success') {
             toastTitle.textContent = title;
             toastMessage.textContent = msg;
-            toastIcon.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>`;
+            const iconMap = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle'
+            };
+            toastIcon.innerHTML = `<i class="fas fa-${iconMap[type] || 'info-circle'}"></i>`;
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
         }
