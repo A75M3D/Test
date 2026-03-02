@@ -599,6 +599,45 @@
             #cartSidebar { width: 100%; right: -100%; }
             .install-btn { bottom: 20px; right: 20px; padding: 10px 20px; }
         }
+
+        /* إخفاء مؤشرات التحميل */
+        .hidden {
+            display: none;
+        }
+        .load-more-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .load-more-btn {
+            background: linear-gradient(135deg, #D4AF37, #8B7355);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .load-more-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.4);
+        }
+        .load-more-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .load-more-btn i {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-light text-gray-800 font-cairo">
@@ -728,10 +767,7 @@
 
                 <!-- حالة التحميل -->
                 <div id="loadingProducts" class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    <div class="animate-pulse bg-white rounded-2xl p-4"><div class="bg-gray-200 h-64 rounded-2xl mb-4"></div><div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
-                    <div class="animate-pulse bg-white rounded-2xl p-4"><div class="bg-gray-200 h-64 rounded-2xl mb-4"></div><div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
-                    <div class="animate-pulse bg-white rounded-2xl p-4"><div class="bg-gray-200 h-64 rounded-2xl mb-4"></div><div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
-                    <div class="animate-pulse bg-white rounded-2xl p-4"><div class="bg-gray-200 h-64 rounded-2xl mb-4"></div><div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
+                    <!-- سيتم عرض 4 عناصر متحركة -->
                 </div>
 
                 <!-- شبكة المنتجات -->
@@ -744,6 +780,14 @@
                     </div>
                     <h3 class="text-2xl font-bold text-dark mb-3">لا توجد منتجات</h3>
                     <p class="text-gray-600">جرب اختيار تصنيف آخر</p>
+                </div>
+
+                <!-- زر تحميل المزيد -->
+                <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                    <button class="load-more-btn" id="loadMoreBtn">
+                        <i class="fas fa-spinner" style="display: none;"></i>
+                        تحميل المزيد
+                    </button>
                 </div>
             </div>
         </section>
@@ -816,7 +860,7 @@
                     
                     <!-- حقوق النشر -->
                     <div class="copyright">
-                        جميع الحقوق محفوظة &copy; 2025 متجر المستقبل
+                        جميع الحقوق محفوظةcopy;2026& متجر المستقبل
                     </div>
                 </div>
             </div>
@@ -843,6 +887,15 @@
         let products = [];
         let cart = JSON.parse(localStorage.getItem('futureStoreCart')) || [];
         let currentCategory = 'الكل';
+        
+        // متغيرات Pagination والكاش
+        let lastVisible = null;
+        let loadingMore = false;
+        let hasMore = true;
+        const CACHE_DURATION = 0 * 60 * 60 * 1000; // 6 ساعة
+        const REFRESH_THRESHOLD = 0 * 60 * 60 * 1000; // 6 ساعة (قبل ساعتين من انتهاء الصلاحية)
+        const LOAD_COOLDOWN = 5000; // 5 ثواني
+        let lastLoadTime = 0;
 
         // عناصر DOM
         const loadingScreen = document.getElementById('loadingScreen');
@@ -874,6 +927,18 @@
         const themeToggle = document.getElementById('themeToggle');
         const themeColorMeta = document.getElementById('theme-color');
         const deliveryTruck = document.getElementById('deliveryTruck');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const loadMoreSpinner = loadMoreBtn.querySelector('i');
+
+        // عرض عناصر التحميل المتحركة
+        loadingProducts.innerHTML = Array(4).fill(0).map(() => `
+            <div class="animate-pulse bg-white rounded-2xl p-4">
+                <div class="bg-gray-200 h-64 rounded-2xl mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div class="h-3 bg-gray-200 rounded w-full"></div>
+            </div>
+        `).join('');
 
         // ==================== PWA Installation ====================
         let deferredPrompt;
@@ -925,7 +990,7 @@
         // ==================== تهيئة الموقع ====================
         async function initializeSite() {
             try {
-                await loadProducts();
+                await loadProductsFromCacheOrFirestore();
                 setupEventListeners();
                 updateCartUI();
                 initTheme(); // تفعيل الوضع المحفوظ
@@ -945,6 +1010,7 @@
             mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('-translate-y-full'));
             document.addEventListener('keydown', (e) => e.key === 'Escape' && closeCartSidebar());
             themeToggle.addEventListener('click', toggleTheme);
+            loadMoreBtn.addEventListener('click', loadMoreProducts);
         }
 
         // ==================== الوضع الفاتح/الداكن ====================
@@ -971,44 +1037,157 @@
             }
         }
 
-        // ==================== جلب المنتجات من Firebase ====================
-        async function loadProducts() {
+        // ==================== دوال الكاش ====================
+        function cacheProducts(productsArray) {
+            const cacheData = {
+                products: productsArray,
+                category: currentCategory,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('futureStoreProductsCache', JSON.stringify(cacheData));
+        }
+
+        function getCachedProducts() {
+            const cached = localStorage.getItem('futureStoreProductsCache');
+            if (!cached) return null;
+            
             try {
-                const snapshot = await db.collection('users').orderBy('created_at', 'desc').get();
-                if (!snapshot.empty) {
-                    products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const data = JSON.parse(cached);
+                if (Date.now() - data.timestamp < CACHE_DURATION) {
+                    return data.products;
                 } else {
-                    // بيانات افتراضية متنوعة
-                    products = [
-                        { id: '1', name: 'بدلة رجالية فاخرة', category: 'ملبوسات رجالية', price: 1200, original_price: 1500, image_url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'بدلة رسمية أنيقة من قماش فاخر' },
-                        { id: '2', name: 'قميص قطني', category: 'ملبوسات رجالية', price: 250, image_url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'قميص بأكمام طويلة مناسب للعمل' },
-                        { id: '3', name: 'فستان سهرة', category: 'ملبوسات نسائية', price: 850, original_price: 1100, image_url: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'فستان أنيق مناسب للمناسبات' },
-                        { id: '4', name: 'بلوزة حرير', category: 'ملبوسات نسائية', price: 320, image_url: 'https://images.unsplash.com/photo-1604695573708-5313c7c57afd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'بلوزة ناعمة بأكمام قصيرة' },
-                        { id: '5', name: 'طقم أطفال', category: 'ملبوسات أطفال', price: 180, image_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'طقم مكون من بنطلون وقميص' },
-                        { id: '6', name: 'ساعة يد فاخرة', category: 'اكسسوارات', price: 550, original_price: 700, image_url: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'ساعة بعقارب ذهبية' },
-                        { id: '7', name: 'نظارة شمسية', category: 'اكسسوارات', price: 220, image_url: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'نظارة بتصميم عصري' },
-                        { id: '8', name: 'سلسال ذهب', category: 'اكسسوارات', price: 950, image_url: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'سلسال من الذهب عيار 18' },
-                        { id: '9', name: 'حزام جلدي', category: 'اكسسوارات', price: 150, image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حزام بني فاخر' },
-                        { id: '10', name: 'عطر فرنسي', category: 'تجميل', price: 430, original_price: 600, image_url: 'https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'عطر برائحة خشبية' },
-                        { id: '11', name: 'أحمر شفاه', category: 'تجميل', price: 85, image_url: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'أحمر شفاه طويل الأمد' },
-                        { id: '12', name: 'كريم ترطيب', category: 'تجميل', price: 120, image_url: 'https://images.unsplash.com/photo-1556229010-aa3f7ff66b24?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'كريم مغذي للبشرة' },
-                        { id: '13', name: 'حذاء رياضي', category: 'أحذية', price: 320, original_price: 400, image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حذاء رياضي مريح' },
-                        { id: '14', name: 'حذاء رسمي', category: 'أحذية', price: 450, image_url: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', description: 'حذاء جلدي أنيق' },
-                    ];
+                    localStorage.removeItem('futureStoreProductsCache');
+                    return null;
                 }
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // تحميل المنتجات من الكاش أو Firestore
+        async function loadProductsFromCacheOrFirestore(forceRefresh = false) {
+            const now = Date.now();
+            if (!forceRefresh && now - lastLoadTime < LOAD_COOLDOWN) {
+                return;
+            }
+            lastLoadTime = now;
+
+            // إظهار مؤشر التحميل
+            loadingProducts.classList.remove('hidden');
+            productsGrid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            const cached = getCachedProducts();
+            
+            if (cached && !forceRefresh) {
+                products = cached;
                 displayFilters();
                 displayProducts();
+                loadingProducts.classList.add('hidden');
+                productsGrid.classList.remove('hidden');
+                
+                // التحقق من عمر الكاش: إذا كان قارب على الانتهاء، قم بتحديثه في الخلفية
+                const cacheData = JSON.parse(localStorage.getItem('futureStoreProductsCache'));
+                if (cacheData) {
+                    const cacheAge = now - cacheData.timestamp;
+                    if (cacheAge > REFRESH_THRESHOLD) {
+                        refreshProductsInBackground();
+                    }
+                }
+            } else {
+                await loadProductsFromFirestore(true);
+                loadingProducts.classList.add('hidden');
+                productsGrid.classList.remove('hidden');
+            }
+        }
+
+        // تحديث المنتجات في الخلفية
+        async function refreshProductsInBackground() {
+            try {
+                await loadProductsFromFirestore(true);
+            } catch (error) {
+                console.error('خطأ في التحديث الخلفي:', error);
+            }
+        }
+
+        // تحميل المنتجات من Firestore مع Pagination
+        async function loadProductsFromFirestore(reset = true) {
+            if (loadingMore) return;
+            loadingMore = true;
+
+            // تفعيل حالة التحميل
+            if (!reset) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.classList.add('loading');
+                loadMoreSpinner.style.display = 'inline-block';
+            }
+
+            try {
+                let query = db.collection('users').orderBy('created_at', 'desc').limit(20);
+                
+                if (!reset && lastVisible) {
+                    query = query.startAfter(lastVisible);
+                }
+                
+                const snapshot = await query.get();
+                
+                if (!snapshot.empty) {
+                    const newProducts = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    lastVisible = snapshot.docs[snapshot.docs.length - 1];
+                    hasMore = snapshot.docs.length === 20;
+                    
+                    if (reset) {
+                        products = newProducts;
+                    } else {
+                        products = [...products, ...newProducts];
+                    }
+                    
+                    // تحديث الكاش
+                    cacheProducts(products);
+                    
+                    // إعادة عرض الفلاتر والمنتجات
+                    displayFilters();
+                    displayProducts();
+                    
+                    // إظهار أو إخفاء زر تحميل المزيد
+                    if (hasMore) {
+                        loadMoreContainer.style.display = 'block';
+                    } else {
+                        loadMoreContainer.style.display = 'none';
+                    }
+                } else {
+                    if (reset) {
+                        products = [];
+                        displayFilters();
+                        displayProducts();
+                    }
+                    hasMore = false;
+                    loadMoreContainer.style.display = 'none';
+                }
             } catch (error) {
                 console.error('خطأ في تحميل المنتجات:', error);
+                showToast('حدث خطأ', 'فشل تحميل المنتجات', 'error');
+            } finally {
+                loadingMore = false;
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.classList.remove('loading');
+                loadMoreSpinner.style.display = 'none';
             }
+        }
+
+        // دالة تحميل المزيد
+        async function loadMoreProducts() {
+            if (!hasMore || loadingMore) return;
+            await loadProductsFromFirestore(false);
         }
 
         // ==================== عرض الفلاتر المحسنة (قابلة للتمرير) ====================
         function displayFilters() {
-            const allCategories = products.map(p => p.category);
-            const extraCategories = ['ملبوسات رجالية', 'ملبوسات نسائية', 'ملبوسات أطفال', 'اكسسوارات', 'تجميل', 'أحذية'];
-            const merged = [...new Set([...allCategories, ...extraCategories])];
-            const categories = ['الكل', ...merged.sort()];
+            const categories = ['الكل', ...new Set(products.map(p => p.category))];
             
             filtersContainer.innerHTML = '';
             categories.forEach(cat => {
@@ -1028,9 +1207,6 @@
 
         // ==================== عرض المنتجات ببطاقات محسنة ====================
         function displayProducts() {
-            loadingProducts.classList.add('hidden');
-            productsGrid.classList.remove('hidden');
-            
             let filtered = [];
             if (currentCategory === 'الكل') {
                 filtered = products;
@@ -1045,11 +1221,12 @@
             }
             
             emptyState.classList.add('hidden');
+            productsGrid.classList.remove('hidden');
             productsGrid.innerHTML = filtered.map(p => `
                 <div class="product-card" data-product-id="${p.id}">
                     ${p.original_price ? '<span class="product-badge">تخفيض</span>' : ''}
                     <div class="product-image-wrapper">
-                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}" class="product-image">
+                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}" class="product-image" loading="lazy">
                     </div>
                     <div class="product-details">
                         <div class="product-category">${p.category}</div>
@@ -1068,7 +1245,6 @@
             // إضافة مستمعي النقر لتفعيل التأثير الكهروضوئي عند الضغط على البطاقة
             document.querySelectorAll('.product-card').forEach(card => {
                 card.addEventListener('click', function(e) {
-                    // نتأكد أن الضغط لم يكن على الزر نفسه (لتجنب التأثير المزدوج)
                     if (!e.target.closest('.add-to-cart-btn')) {
                         triggerElectroGlow(this);
                     }
@@ -1123,7 +1299,7 @@
             } else {
                 cartItems.innerHTML = cart.map(item => `
                     <div class="flex gap-4 bg-gray-50 p-4 rounded-xl mb-4">
-                        <img src="${item.image_url}" class="w-20 h-20 object-cover rounded-lg">
+                        <img src="${item.image_url}" class="w-20 h-20 object-cover rounded-lg" loading="lazy">
                         <div class="flex-1">
                             <h4 class="font-bold">${item.name}</h4>
                             <div class="flex items-center justify-between mt-2">
@@ -1196,9 +1372,8 @@
             deliveryTruck.classList.add('show');
             setTimeout(() => {
                 deliveryTruck.classList.remove('show');
-            }, 2000); // بعد انتهاء الحركة
+            }, 2000);
 
-            // تأخير فتح الواتساب قليلاً لرؤية الشاحنة
             setTimeout(() => {
                 let message = 'مرحباً، أريد طلب المنتجات التالية من متجر المستقبل:\n\n';
                 cart.forEach((item, i) => {
@@ -1206,7 +1381,7 @@
                 });
                 const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
                 message += `\nالمجموع: ${total.toLocaleString('ar-SA')} ج.س`;
-                const phoneNumber = '249113018064'; // ضع رقم الواتساب هنا
+                const phoneNumber = '249113018064';
                 window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }, 500);
         }
